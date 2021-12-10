@@ -1,38 +1,78 @@
 .App {
-  text-align: center;
+  border-width: 2px;
+  width: 100%;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.container {
   display: flex;
+  height: 100%;
+}
+.inputName {
+  width: 70%;
+}
+.input {
+  padding: 20px;
+  font-size: large;
+}
+.nbrInput {
+  width: 20%;
+}
+.infoComponent {
+  width: 90%;
+  display: flex;
+  margin-top: 20px;
   flex-direction: column;
-  align-items: center;
+}
+.categorie {
+  display: flex;
+  margin: 10px;
+  width: 100%;
+}
+.multiInput {
+  width: 100%;
+}
+.nbrComponent {
+  width: 90%;
+  display: flex;
+  margin-top: 20px;
+  justify-content: space-between;
+}
+
+.inputFile {
+  align-self: center;
+  margin: 20px;
+}
+
+.drag {
+  display: flex;
+  width: 80%;
+  flex-direction: row;
+}
+.imageComponent {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
 }
 
-.App-link {
-  color: #61dafb;
+.submitButton {
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  left: 50%;
+  align-self: center;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.leftContainer {
+  background-color: red;
+  width: 25%;
+}
+.middleContainer {
+  width: 50%;
+  display: flex;
+  margin: 20px;
+  align-items: center;
+  flex-direction: column;
+}
+.rightContainer {
+  height: 500px;
+  background-color: pink;
+  width: 25%;
 }
