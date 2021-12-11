@@ -9,6 +9,10 @@
 .inputName {
   width: 70%;
 }
+.etapes {
+  height: 100px;
+  font-size: 20;
+}
 .input {
   padding: 20px;
   font-size: large;

@@ -13,11 +13,11 @@ const DropZone = () => {
     backgroundColor: "gray",
     color: "white",
     transition: "border .24s ease-in-out",
-    height: "200px",
-    width: "400px",
-    marginRight: "20px",
+    height: "100%",
+    width: "100%",
   };
   const { getRootProps, getInputProps } = useDropzone({
+    multiple: false,
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       setFiles(
@@ -47,7 +47,15 @@ const DropZone = () => {
   ));
 
   return (
-    <div className="drag">
+    <div
+      style={{
+        flexDirection: "row",
+        display: "flex",
+        width: "100%",
+        height: "35%",
+        alignItems: "center",
+      }}
+    >
       <div {...getRootProps({ style: baseStyle })}>
         <input {...getInputProps()} />
         <p>Drop files here</p>
