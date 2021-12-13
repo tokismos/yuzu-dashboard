@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Loader from "react-loader-spinner";
 
 const InputComponent = ({ index, setIngredients, ingredients }) => {
   const [ingredient, setIngredient] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [unite, setUnite] = useState("");
+  const [unite, setUnite] = useState("gramme");
   //To change the object of just the same index
   useEffect(() => {
-    ingredients[index] = { ingredient, quantity, unite };
+    ingredients[index] = { name: ingredient, quantity, unite };
     setIngredients([...ingredients]);
   }, [ingredient, quantity, unite]);
   const remove = () => {
@@ -29,13 +30,14 @@ const InputComponent = ({ index, setIngredients, ingredients }) => {
       >
         <input
           placeholder={`Ingredient N: ${index + 1}`}
-          value={ingredients[index].ingredient}
+          defaultValue={ingredients[index].ingredient}
           onChange={(e) => setIngredient(e.target.value)}
           type="text"
           style={{ ...styles.input, width: "60%" }}
         />
         <input
-          value={ingredients[index].quantity}
+          placeholder={`Qtité`}
+          defaultValue={ingredients[index].quantity}
           onChange={(e) => setQuantity(e.target.value)}
           type="text"
           style={{ ...styles.input, width: "15%" }}
@@ -55,6 +57,7 @@ const InputComponent = ({ index, setIngredients, ingredients }) => {
           display: "flex",
           justifyContent: "flex-end",
           marginRight: 20,
+          marginBottom: 10,
         }}
       >
         <a href="#" onClick={remove} tabIndex="-1">
@@ -65,13 +68,30 @@ const InputComponent = ({ index, setIngredients, ingredients }) => {
   );
 };
 
-export default function RightComponent() {
-  const [ingredients, setIngredients] = useState([""]);
+export default function RightComponent({ form, setForm, onClick }) {
+  const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [ingredients, setIngredients] = useState([
+    { ingredient: "", quantity: "", unite: "" },
+  ]);
+  const ref = useRef(null);
   const handleClick = () => {
     setIngredients((p) => [...p, ""]);
+    ref.current.scrollIntoView({ block: "center" });
   };
+
   useEffect(() => {
-    console.log(JSON.stringify(ingredients));
+    console.log("this is FORM", Object.keys(form).length);
+    if (Object.keys(form).length == 10) {
+      //number of keys in the form
+      setDisabled(false);
+    }
+  }, [form]);
+  useEffect(() => {
+    const tmp = { ...form };
+    tmp.ingredients = [...ingredients];
+    setForm(tmp);
   }, [ingredients]);
   return (
     <div
@@ -82,10 +102,11 @@ export default function RightComponent() {
         height: "100%",
       }}
     >
-      <div style={{ backgroundColor: "red", flex: 1, overflowY: "scroll" }}>
+      <div ref={ref} style={{ flex: 1, overflowY: "scroll" }}>
         {ingredients.map((item, index) => {
           return (
             <InputComponent
+              key={index}
               index={index}
               setIngredients={setIngredients}
               ingredients={ingredients}
@@ -93,10 +114,59 @@ export default function RightComponent() {
           );
         })}
 
-        <button onClick={handleClick}>ADD</button>
+        <button
+          style={{
+            backgroundColor: "black",
+            color: "white",
+            height: "50px",
+            width: "50px",
+          }}
+          onClick={() => {
+            handleClick();
+          }}
+        >
+          ADD
+        </button>
       </div>
-      <div style={{ backgroundColor: "yellow", height: "10%" }}>
-        <button>ADDDDDD</button>
+      <label style={{ alignSelf: "center", display: "flex" }}>{msg}</label>
+      <div
+        style={{
+          height: "10%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <button
+          disabled={disabled}
+          onClick={() => {
+            setMsg("");
+            setLoading(true);
+            setDisabled(true);
+            onClick(setLoading, setMsg, setDisabled);
+          }}
+          style={{
+            backgroundColor: disabled ? "gray" : "orange",
+            width: "90%",
+            height: "90%",
+            fontSize: 20,
+            flexDirection: "row",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {loading && (
+            <Loader
+              type="Puff"
+              color="white"
+              height={30}
+              width={30}
+              //3 secs
+            />
+          )}
+          Ajouter La recette
+        </button>
       </div>
     </div>
   );

@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-const DropZone = () => {
+const DropZone = ({ form, setForm }) => {
   const [files, setFiles] = useState([]);
+  const [img, setImg] = useState("");
+
   const baseStyle = {
     display: "flex",
     flexDirection: "column",
@@ -21,20 +23,26 @@ const DropZone = () => {
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       setFiles(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        )
+        acceptedFiles.map(async (file) => {
+          console.log("thiiisiiiis iss fil", file);
+          console.log("files0", files);
+          const tmp = { ...form };
+          tmp.imgURL = file;
+
+          setImg(URL.createObjectURL(file));
+          setForm(tmp);
+          console.log("formtmp ", tmp.name);
+        })
       );
     },
   });
 
+  useEffect(() => {}, [files]);
   const images = files.map((file) => (
-    <div key={file.name}>
+    <div key={file?.name}>
       <div>
         <img
-          src={file.preview}
+          src={img}
           style={{
             width: "200px",
             height: "200px",

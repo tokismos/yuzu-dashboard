@@ -1,23 +1,40 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
-import { MultiSelect } from "react-multi-select-component";
-import DropZone from "./components/DropZone";
+
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
+import { db } from "./axios";
+import { addImage } from "./firebase";
 function App() {
-  const ref = useRef(null);
+  const [form, setForm] = useState({ difficulty: "facile" });
 
-  const handleSubmit = (event) => {
-    console.log(ref.current.files[0]);
-    event.preventDefault();
+  const handleSubmit = (setLoading, setMsg, setDisabled) => {
+    const stepsToArray = form?.steps?.split(/\r?\n/);
+    const stepsWithoutSpace = stepsToArray?.filter(
+      //detect the white spaces in a line
+      (item) => item.trim().length != 0
+    );
+    const tmp = { ...form };
+    //we wait add image to storage to get url then call the post api to add to mongoDB
+
+    addImage(form.name, tmp.imgURL)
+      .then(async (url) => {
+        tmp.imgURL = url;
+        tmp.steps = stepsWithoutSpace;
+        await db.post("/add", tmp);
+        setForm(tmp);
+        setLoading(false);
+        setMsg("UPLOAD SUCCESSFUL");
+      })
+      .catch((e) => {
+        setMsg("THERE IS AN ERROR", e);
+        setLoading(false);
+        setDisabled(false);
+      });
   };
   useEffect(() => {
-    ref.current.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
-  }, [ref]);
+    console.log("fooorm", form);
+  }, [form]);
   return (
     <div
       style={{
@@ -30,7 +47,7 @@ function App() {
         <label>hi</label>
       </div>
       <div style={{ width: "50%", margin: 20 }}>
-        <MiddleComponent />
+        <MiddleComponent form={form} setForm={setForm} />
       </div>
       <div
         style={{
@@ -38,7 +55,7 @@ function App() {
           height: "100%",
         }}
       >
-        <RightComponent />
+        <RightComponent form={form} setForm={setForm} onClick={handleSubmit} />
       </div>
     </div>
   );
