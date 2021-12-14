@@ -15,8 +15,9 @@ export default function MiddleComponent({ form, setForm }) {
   const optionsCategorie = [
     { label: "viande", value: "Viande" },
     { label: "poisson", value: "Poisson" },
-    { label: "Vegetarien", value: "vegetarien" },
+    { label: "vegetarien", value: "Vegetarien" },
     { label: "sansGluten", value: "SansGluten" },
+    { label: "vegan", value: "Vegan" },
   ];
   const optionsMateriel = [
     { label: "four ", value: "Four" },
@@ -73,7 +74,7 @@ export default function MiddleComponent({ form, setForm }) {
           }}
         >
           <input
-            style={{ fontSize: 20, display: "flex", width: "30%" }}
+            style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="Nbr. Personne"
             defaultValue={form.nbrPersonne}
@@ -84,7 +85,7 @@ export default function MiddleComponent({ form, setForm }) {
             }}
           />
           <input
-            style={{ fontSize: 20, display: "flex", width: "30%" }}
+            style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Cuisson"
             defaultValue={form.tempsCuisson}
@@ -95,13 +96,24 @@ export default function MiddleComponent({ form, setForm }) {
             }}
           />
           <input
-            style={{ fontSize: 20, display: "flex", width: "30%" }}
+            style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Preparation"
             defaultValue={form.tempsPreparation}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsPreparation = e.target.value;
+              setForm(tmp);
+            }}
+          />
+          <input
+            style={{ fontSize: 20, display: "flex", width: "23%" }}
+            type="text"
+            placeholder="T. Attente"
+            defaultValue={form.tempsAttente}
+            onChange={(e) => {
+              const tmp = { ...form };
+              tmp.tempsAttente = e.target.value;
               setForm(tmp);
             }}
           />

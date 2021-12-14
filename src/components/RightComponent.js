@@ -10,8 +10,10 @@ const InputComponent = ({ index, setIngredients, ingredients }) => {
     ingredients[index] = { name: ingredient, quantity, unite };
     setIngredients([...ingredients]);
   }, [ingredient, quantity, unite]);
+
   const remove = () => {
     let newArray = ingredients.filter((item, i) => {
+      console.log("INDEX", index, i, item);
       return index != i;
     });
 
@@ -19,7 +21,7 @@ const InputComponent = ({ index, setIngredients, ingredients }) => {
     setIngredients([...newArray]);
   };
   return (
-    <div>
+    <div key={index}>
       <div
         style={{
           width: "100%",
@@ -30,7 +32,7 @@ const InputComponent = ({ index, setIngredients, ingredients }) => {
       >
         <input
           placeholder={`Ingredient N: ${index + 1}`}
-          defaultValue={ingredients[index].ingredient}
+          value={ingredients[index].ingredient}
           onChange={(e) => setIngredient(e.target.value)}
           type="text"
           style={{ ...styles.input, width: "60%" }}
@@ -49,7 +51,10 @@ const InputComponent = ({ index, setIngredients, ingredients }) => {
         >
           <option value="gramme">g</option>
           <option value="cuillere">c à s</option>
-          <option value="kilo">kg</option>
+          <option value="ml">Ml</option>
+          <option value="l">L</option>
+          <option value="cac">c à c</option>
+          <option value="pincee">Pincée</option>
         </select>
       </div>
       <div
