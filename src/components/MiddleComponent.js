@@ -13,30 +13,19 @@ export default function MiddleComponent({ form, setForm }) {
   };
 
   const optionsCategorie = [
-    { label: "viande", value: "Viande" },
-    { label: "poisson", value: "Poisson" },
-    { label: "vegetarien", value: "Vegetarien" },
-    { label: "sansGluten", value: "SansGluten" },
-    { label: "vegan", value: "Vegan" },
+    { label: "viande", value: "viande" },
+    { label: "poisson", value: "poisson" },
+    { label: "vegetarien", value: "vegetarien" },
+    { label: "sansGluten", value: "sansGluten" },
+    { label: "vegan", value: "vegan" },
   ];
   const optionsMateriel = [
-    { label: "four ", value: "Four" },
-    { label: "microOnde ", value: "Micro-Onde" },
-    { label: "mixeur ", value: "Mixeur" },
-    { label: "robotCuisseur ", value: "Robot Cuisseur" },
-    { label: "friteuse ", value: "Friteuse" },
+    { label: "four", value: "four" },
+    { label: "microOnde", value: "microOnde" },
+    { label: "mixeur", value: "mixeur" },
+    { label: "robotCuisseur", value: "robotCuisseur" },
+    { label: "friteuse", value: "friteuse" },
   ];
-
-  //When we choose the cat or mat we rerender to change form state in App.js
-  useEffect(() => {
-    const selectedCategorieLabel = selectedCategorie.map((item) => item.label);
-    const selectedMaterialLabel = selectedMaterial.map((item) => item.label);
-    const tmp = { ...form };
-
-    tmp.category = selectedCategorieLabel;
-    tmp.material = selectedMaterialLabel;
-    setForm(tmp);
-  }, [selectedCategorie, selectedMaterial]);
 
   return (
     <>
@@ -56,6 +45,7 @@ export default function MiddleComponent({ form, setForm }) {
             height: "50px",
             fontSize: 20,
           }}
+          value={form.name}
           type="text"
           placeholder="Nom de la recette"
           onChange={(e) => {
@@ -148,8 +138,10 @@ export default function MiddleComponent({ form, setForm }) {
               className="multiInput"
               options={optionsCategorie}
               labelledBy="Select"
-              value={selectedCategorie}
-              onChange={setSelectedCategorie}
+              value={form?.category}
+              onChange={(item) => {
+                setForm({ ...form, category: item });
+              }}
               hasSelectAll={false}
               shouldToggleOnHover
               valueRenderer={customValueRenderer}
@@ -164,8 +156,10 @@ export default function MiddleComponent({ form, setForm }) {
               className="multiInput"
               options={optionsMateriel}
               labelledBy="Select"
-              value={selectedMaterial}
-              onChange={setSelectedMaterial}
+              value={form?.material}
+              onChange={(item) => {
+                setForm({ ...form, material: item });
+              }}
               hasSelectAll={false}
               shouldToggleOnHover
               valueRenderer={customValueRenderer}

@@ -5,9 +5,24 @@ import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
 import { db } from "./axios";
 import { addImage } from "./firebase";
+import LeftComponent from "./components/LeftComponent";
 function App() {
-  const [form, setForm] = useState({ difficulty: "facile" });
+  const [form, setForm] = useState({
+    difficulty: "facile",
+    category: [],
+    material: [],
+    ingredients: [],
+  });
+  const [recipes, setRecipes] = useState(["ss", "s"]);
+  const getAllRecipes = async () => {
+    const result = await db.get("/");
+    console.log("res", result);
+    setRecipes(result.data);
+  };
 
+  useEffect(() => {
+    getAllRecipes();
+  }, []);
   const handleSubmit = (setLoading, setMsg, setDisabled) => {
     const stepsToArray = form?.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
@@ -21,6 +36,8 @@ function App() {
       .then(async (url) => {
         tmp.imgURL = url;
         tmp.steps = stepsWithoutSpace;
+        tmp.category = form.category.map((item) => item.label);
+        tmp.material = form.material.map((item) => item.label);
         await db.post("/add", tmp);
         setForm(tmp);
         setLoading(false);
@@ -43,8 +60,17 @@ function App() {
         height: "100vh",
       }}
     >
-      <div style={{ width: "25%", backgroundColor: "green" }}>
-        <label>hi</label>
+      <div
+        style={{
+          width: "25%",
+          backgroundColor: "green",
+          height: "100%",
+          overflowY: "scroll",
+        }}
+      >
+        {recipes.map((item) => {
+          return <LeftComponent recipe={item} setForm={setForm} />;
+        })}
       </div>
       <div style={{ width: "50%", margin: 20 }}>
         <MiddleComponent form={form} setForm={setForm} />

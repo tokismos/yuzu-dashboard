@@ -108,7 +108,7 @@ export default function RightComponent({ form, setForm, onClick }) {
       }}
     >
       <div ref={ref} style={{ flex: 1, overflowY: "scroll" }}>
-        {ingredients.map((item, index) => {
+        {form.ingredients.map((item, index) => {
           return (
             <InputComponent
               key={index}
