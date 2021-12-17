@@ -1,13 +1,15 @@
 import React from "react";
 import { useEffect } from "react/cjs/react.development";
+import { db } from "../axios";
 
-export default function LeftComponent({ recipe, setForm }) {
+export default function LeftComponent({ recipe, setForm, setModifying }) {
   return (
     <div
       style={{
         backgroundColor: "white",
         height: "15vh",
         display: "flex",
+        width: "100%",
         flexDirection: "row",
         alignItems: "center",
       }}
@@ -38,6 +40,7 @@ export default function LeftComponent({ recipe, setForm }) {
       <div>
         <button
           onClick={() => {
+            setModifying(true);
             let arrCategory = [];
             let arrMaterial = [];
             //to show the values in the MultiSelect
@@ -67,6 +70,23 @@ export default function LeftComponent({ recipe, setForm }) {
           }}
         >
           Modifier
+        </button>
+        <button
+          style={{ backgroundColor: "red", color: "white" }}
+          onClick={async () => {
+            if (
+              window.confirm("Est tu sur de vouloir supprimer cette recette")
+            ) {
+              // Save it!
+              await db.delete(`/${recipe._id}`);
+              console.log("deleted");
+            } else {
+              // Do nothing!
+              console.log("Thing was not saved to the database.");
+            }
+          }}
+        >
+          delete
         </button>
       </div>
     </div>

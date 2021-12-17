@@ -1,103 +1,98 @@
 import React, { useEffect, useRef, useState } from "react";
 import Loader from "react-loader-spinner";
 
-const InputComponent = ({ index, setIngredients, ingredients }) => {
-  const [ingredient, setIngredient] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unite, setUnite] = useState("gramme");
-  //To change the object of just the same index
-  useEffect(() => {
-    ingredients[index] = { name: ingredient, quantity, unite };
-    setIngredients([...ingredients]);
-  }, [ingredient, quantity, unite]);
-
-  const remove = () => {
-    let newArray = ingredients.filter((item, i) => {
-      console.log("INDEX", index, i, item);
-      return index != i;
-    });
-
-    console.log(JSON.stringify(newArray));
-    setIngredients([...newArray]);
-  };
-  return (
-    <div key={index}>
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <input
-          placeholder={`Ingredient N: ${index + 1}`}
-          value={ingredients[index].ingredient}
-          onChange={(e) => setIngredient(e.target.value)}
-          type="text"
-          style={{ ...styles.input, width: "60%" }}
-        />
-        <input
-          placeholder={`Qtité`}
-          defaultValue={ingredients[index].quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          type="text"
-          style={{ ...styles.input, width: "15%" }}
-        />
-        <select
-          style={{ width: "15%", fontSize: 20 }}
-          value={ingredients[index].unite}
-          onChange={(e) => setUnite(e.target.value)}
-        >
-          <option value="gramme">g</option>
-          <option value="cuillere">c à s</option>
-          <option value="ml">Ml</option>
-          <option value="l">L</option>
-          <option value="cac">c à c</option>
-          <option value="pincee">Pincée</option>
-        </select>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginRight: 20,
-          marginBottom: 10,
-        }}
-      >
-        <a href="#" onClick={remove} tabIndex="-1">
-          Delete
-        </a>
-      </div>
-    </div>
-  );
-};
-
-export default function RightComponent({ form, setForm, onClick }) {
-  const [disabled, setDisabled] = useState(true);
+export default function RightComponent({ form, setForm, onClick, modifying }) {
+  const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [ingredients, setIngredients] = useState([
     { ingredient: "", quantity: "", unite: "" },
   ]);
+  const InputComponent = ({ index, setIngredients, ingredients }) => {
+    const [ingredient, setIngredient] = useState(form.ingredients[index].name);
+    const [quantity, setQuantity] = useState(form.ingredients[index].quantity);
+    const [unite, setUnite] = useState(form.ingredients[index].unite);
+    //To change the object of just the same index
+    useEffect(() => {
+      const tmp = { ...form };
+      tmp.ingredients[index] = { name: ingredient, quantity, unite };
+    }, [ingredient, quantity, unite]);
+
+    const remove = () => {
+      let newArray = form.ingredients.filter((item, i) => {
+        console.log("INDEX", index, i, item);
+        return index != i;
+      });
+
+      console.log(JSON.stringify(newArray));
+      const tmp = { ...form };
+      tmp.ingredients = newArray;
+      setForm(tmp);
+    };
+    return (
+      <div key={index}>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <input
+            placeholder={`Ingredient N: ${index + 1}`}
+            defaultValue={form.ingredients[index].name}
+            onChange={(e) => setIngredient(e.target.value)}
+            type="text"
+            style={{ ...styles.input, width: "60%" }}
+          />
+          <input
+            placeholder={`Qtité`}
+            defaultValue={form.ingredients[index].quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            type="text"
+            style={{ ...styles.input, width: "15%" }}
+          />
+          <select
+            style={{ width: "15%", fontSize: 20 }}
+            defaultValue={form.ingredients[index].unite}
+            onChange={(e) => setUnite(e.target.value)}
+          >
+            <option value="gramme">g</option>
+            <option value="cuillere">c à s</option>
+            <option value="ml">Ml</option>
+            <option value="l">L</option>
+            <option value="cac">c à c</option>
+            <option value="pincee">Pincée</option>
+          </select>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginRight: 20,
+            marginBottom: 10,
+          }}
+        >
+          <a href="#" onClick={remove} tabIndex="-1">
+            Delete
+          </a>
+        </div>
+      </div>
+    );
+  };
+
   const ref = useRef(null);
   const handleClick = () => {
-    setIngredients((p) => [...p, ""]);
+    const tmp = { ...form };
+    tmp.ingredients = [
+      ...tmp.ingredients,
+      { name: "", quantity: "", unite: "gramme" },
+    ];
+    setForm(tmp);
     ref.current.scrollIntoView({ block: "center" });
   };
 
-  useEffect(() => {
-    console.log("this is FORM", Object.keys(form).length);
-    if (Object.keys(form).length == 10) {
-      //number of keys in the form
-      setDisabled(false);
-    }
-  }, [form]);
-  useEffect(() => {
-    const tmp = { ...form };
-    tmp.ingredients = [...ingredients];
-    setForm(tmp);
-  }, [ingredients]);
   return (
     <div
       style={{
@@ -111,6 +106,7 @@ export default function RightComponent({ form, setForm, onClick }) {
         {form.ingredients.map((item, index) => {
           return (
             <InputComponent
+              item={item}
               key={index}
               index={index}
               setIngredients={setIngredients}
@@ -170,7 +166,7 @@ export default function RightComponent({ form, setForm, onClick }) {
               //3 secs
             />
           )}
-          Ajouter La recette
+          {modifying ? "Modifier Recette " : " Ajouter La recette"}
         </button>
       </div>
     </div>

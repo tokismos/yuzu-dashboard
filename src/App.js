@@ -14,6 +14,7 @@ function App() {
     ingredients: [],
   });
   const [recipes, setRecipes] = useState(["ss", "s"]);
+  const [modifying, setModifying] = useState(false);
   const getAllRecipes = async () => {
     const result = await db.get("/");
     console.log("res", result);
@@ -23,6 +24,32 @@ function App() {
   useEffect(() => {
     getAllRecipes();
   }, []);
+  const modifyRecipe = async (setLoading, setMsg, setDisabled) => {
+    const stepsToArray = form?.steps?.split(/\r?\n/);
+    const stepsWithoutSpace = stepsToArray?.filter(
+      //detect the white spaces in a line
+      (item) => item.trim().length != 0
+    );
+    const tmp = { ...form };
+
+    tmp.steps = stepsWithoutSpace;
+    tmp.category = form.category.map((item) => item.label);
+    tmp.material = form.material.map((item) => item.label);
+    if (typeof form.imgURL === "object") {
+      await addImage(form.name, tmp.imgURL)
+        .then(async (url) => {
+          tmp.imgURL = url;
+        })
+        .catch((e) => {
+          setMsg("THERE IS AN ERROR", e);
+        });
+    }
+    await db.patch("/modify", tmp);
+
+    setMsg("Modified successful");
+    setLoading(false);
+    setDisabled(false);
+  };
   const handleSubmit = (setLoading, setMsg, setDisabled) => {
     const stepsToArray = form?.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
@@ -69,7 +96,13 @@ function App() {
         }}
       >
         {recipes.map((item) => {
-          return <LeftComponent recipe={item} setForm={setForm} />;
+          return (
+            <LeftComponent
+              recipe={item}
+              setForm={setForm}
+              setModifying={setModifying}
+            />
+          );
         })}
       </div>
       <div style={{ width: "50%", margin: 20 }}>
@@ -81,7 +114,12 @@ function App() {
           height: "100%",
         }}
       >
-        <RightComponent form={form} setForm={setForm} onClick={handleSubmit} />
+        <RightComponent
+          form={form}
+          setForm={setForm}
+          modifying={modifying}
+          onClick={modifying ? modifyRecipe : handleSubmit}
+        />
       </div>
     </div>
   );

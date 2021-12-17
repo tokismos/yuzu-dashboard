@@ -30,6 +30,7 @@ const addImage = async (name, imageURL) => {
       console.log("Uploaded a blob or file!", snapshot);
       getDownloadURL(imagesRef)
         .then((downloadURL) => {
+          console.log("download", downloadURL);
           resolve(downloadURL);
         })
         .catch((e) => reject("ER"));

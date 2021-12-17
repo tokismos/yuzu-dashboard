@@ -29,9 +29,9 @@ const DropZone = ({ form, setForm }) => {
           const tmp = { ...form };
           tmp.imgURL = file;
 
+          console.log("formtmp ", URL.createObjectURL(file));
           setImg(URL.createObjectURL(file));
           setForm(tmp);
-          console.log("formtmp ", tmp.name);
         })
       );
     },
