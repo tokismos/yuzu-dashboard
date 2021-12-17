@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const db = axios.create({
-  baseURL: "http://localhost:3000/recipes",
+  baseURL: "https://backend-yuzi.herokuapp.com/recipes",
 });
 
 export { db };
