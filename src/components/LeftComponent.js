@@ -2,31 +2,45 @@ import React from "react";
 import { useEffect } from "react/cjs/react.development";
 import { db } from "../axios";
 
-export default function LeftComponent({ recipe, setForm, setModifying }) {
+export default function LeftComponent({
+  recipe,
+  setForm,
+  setModifying,
+  setRecipes,
+}) {
   return (
     <div
       style={{
         backgroundColor: "white",
-        height: "15vh",
+        height: "10vh",
         display: "flex",
-        width: "100%",
+        width: "90%",
         flexDirection: "row",
         alignItems: "center",
+        margin: 10,
+        justifyContent: "space-between",
+        padding: 10,
       }}
     >
       <div>
         <img
           src={recipe?.imgURL}
           style={{
-            height: "10vh",
-            width: "15wh",
+            height: "80px",
+            width: "80px",
 
             objectFit: "contain",
           }}
           alt="preview"
         />
       </div>
-      <div style={{ width: "60%", justifyContent: "center", display: "flex" }}>
+      <div
+        style={{
+          justifyContent: "center",
+          display: "flex",
+          flex: 1,
+        }}
+      >
         <label
           style={{
             fontWeight: "bold",
@@ -37,7 +51,14 @@ export default function LeftComponent({ recipe, setForm, setModifying }) {
           {recipe?.name}
         </label>
       </div>
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "50px",
+          justifyContent: "space-between",
+        }}
+      >
         <button
           onClick={() => {
             setModifying(true);
@@ -79,6 +100,7 @@ export default function LeftComponent({ recipe, setForm, setModifying }) {
             ) {
               // Save it!
               await db.delete(`/${recipe._id}`);
+              setRecipes((p) => p.filter((i) => i._id != recipe._id));
               console.log("deleted");
             } else {
               // Do nothing!

@@ -1,10 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import Loader from "react-loader-spinner";
 
-export default function RightComponent({ form, setForm, onClick, modifying }) {
-  const [disabled, setDisabled] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("");
+export default function RightComponent({
+  form,
+  setForm,
+  onClick,
+  modifying,
+  setDisabled,
+  disabled,
+  loading,
+  setLoading,
+  setMsg,
+  msg,
+}) {
   const [ingredients, setIngredients] = useState([
     { ingredient: "", quantity: "", unite: "" },
   ]);

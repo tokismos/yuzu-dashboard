@@ -42,7 +42,7 @@ const DropZone = ({ form, setForm }) => {
     <div key={file?.name}>
       <div>
         <img
-          src={img}
+          src={typeof form.imgURL !== "object" ? form.imgURL : img}
           style={{
             width: "200px",
             height: "200px",

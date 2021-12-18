@@ -68,6 +68,7 @@ export default function MiddleComponent({ form, setForm }) {
             type="text"
             placeholder="Nbr. Personne"
             defaultValue={form.nbrPersonne}
+            value={form.nbrPersonne}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.nbrPersonne = e.target.value;
@@ -79,6 +80,7 @@ export default function MiddleComponent({ form, setForm }) {
             type="text"
             placeholder="T. Cuisson"
             defaultValue={form.tempsCuisson}
+            value={form.tempsCuisson}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsCuisson = e.target.value;
@@ -89,6 +91,7 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Preparation"
+            value={form.tempsPreparation}
             defaultValue={form.tempsPreparation}
             onChange={(e) => {
               const tmp = { ...form };
@@ -100,6 +103,7 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Attente"
+            value={form.tempsAttente}
             defaultValue={form.tempsAttente}
             onChange={(e) => {
               const tmp = { ...form };

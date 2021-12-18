@@ -7,14 +7,18 @@ import { db } from "./axios";
 import { addImage } from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 function App() {
+  const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
   const [form, setForm] = useState({
     difficulty: "facile",
     category: [],
     material: [],
-    ingredients: [],
+    ingredients: [{ name: "", quantity: "", unite: "gramme" }],
   });
-  const [recipes, setRecipes] = useState(["ss", "s"]);
+  const [recipes, setRecipes] = useState([]);
   const [modifying, setModifying] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const getAllRecipes = async () => {
     const result = await db.get("/");
     console.log("res", result);
@@ -49,8 +53,27 @@ function App() {
     setMsg("Modified successful");
     setLoading(false);
     setDisabled(false);
+    getAllRecipes();
   };
-  const handleSubmit = (setLoading, setMsg, setDisabled) => {
+  const resetAll = () => {
+    setForm({
+      steps: [],
+      name: "",
+      nbrPersonne: "",
+      tempsAttente: "",
+      tempsPreparation: "",
+      tempsCuisson: "",
+      imgURL: "",
+      difficulty: "facile",
+      category: [],
+      material: [],
+      ingredients: [{ name: "", quantity: "", unite: "gramme" }],
+    });
+    setMsg("");
+    setLoading(false);
+    setDisabled(false);
+  };
+  const handleSubmit = () => {
     const stepsToArray = form?.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
       //detect the white spaces in a line
@@ -66,9 +89,9 @@ function App() {
         tmp.category = form.category.map((item) => item.label);
         tmp.material = form.material.map((item) => item.label);
         await db.post("/add", tmp);
-        setForm(tmp);
         setLoading(false);
         setMsg("UPLOAD SUCCESSFUL");
+        getAllRecipes();
       })
       .catch((e) => {
         setMsg("THERE IS AN ERROR", e);
@@ -79,6 +102,11 @@ function App() {
   useEffect(() => {
     console.log("fooorm", form);
   }, [form]);
+  useEffect(() => {
+    if (msg === "UPLOAD SUCCESSFUL") {
+      setTimeout(() => resetAll(), 2000);
+    }
+  }, [msg]);
   return (
     <div
       style={{
@@ -90,20 +118,55 @@ function App() {
       <div
         style={{
           width: "25%",
-          backgroundColor: "green",
+          backgroundColor: "#d3d3d3",
           height: "100%",
-          overflowY: "scroll",
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          padding: 10,
         }}
       >
-        {recipes.map((item) => {
-          return (
-            <LeftComponent
-              recipe={item}
-              setForm={setForm}
-              setModifying={setModifying}
-            />
-          );
-        })}
+        <input
+          placeholder={`Chercher une recette`}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          type="text"
+          style={{
+            alignSelf: "center",
+            display: "flex",
+            width: "90%",
+            height: "10px",
+            fontSize: 20,
+            padding: 15,
+            margin: 10,
+          }}
+        />
+        <label>{recipes.length} recettes</label>
+        <div style={{ overflowY: "scroll", width: "100%", padding: 0 }}>
+          {recipes
+            .filter((item) => {
+              if (searchTerm == "") {
+                return item;
+              } else if (
+                item.name.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+              ) {
+                return item;
+              }
+            })
+            .reverse()
+            .map((item) => {
+              return (
+                <>
+                  <LeftComponent
+                    recipe={item}
+                    recipes={recipes}
+                    setRecipes={setRecipes}
+                    setForm={setForm}
+                    setModifying={setModifying}
+                  />
+                </>
+              );
+            })}
+        </div>
       </div>
       <div style={{ width: "50%", margin: 20 }}>
         <MiddleComponent form={form} setForm={setForm} />
@@ -115,6 +178,12 @@ function App() {
         }}
       >
         <RightComponent
+          msg={msg}
+          setMsg={setMsg}
+          disabled={disabled}
+          setDisabled={setDisabled}
+          loading={loading}
+          setLoading={setLoading}
           form={form}
           setForm={setForm}
           modifying={modifying}
