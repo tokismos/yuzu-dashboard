@@ -60,7 +60,7 @@ const DropZone = ({ form, setForm }) => {
         flexDirection: "row",
         display: "flex",
         width: "100%",
-        height: "35%",
+        height: "25%",
         alignItems: "center",
       }}
     >

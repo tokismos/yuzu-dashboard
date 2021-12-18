@@ -125,7 +125,6 @@ function App() {
           alignItems: "center",
           display: "flex",
           flexDirection: "column",
-          padding: 10,
         }}
       >
         <input
@@ -178,7 +177,6 @@ function App() {
           width: "25%",
           height: "100%",
           backgroundColor: "#d3d3d3",
-          padding: 10,
         }}
       >
         <RightComponent
