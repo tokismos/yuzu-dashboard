@@ -28,17 +28,22 @@ function App() {
   useEffect(() => {
     getAllRecipes();
   }, []);
+
+  //Modifier la recette
   const modifyRecipe = async (setLoading, setMsg, setDisabled) => {
+    //Transform the value of steps to an array
     const stepsToArray = form?.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
       //detect the white spaces in a line
       (item) => item.trim().length != 0
     );
-    const tmp = { ...form };
 
+    const tmp = { ...form };
     tmp.steps = stepsWithoutSpace;
     tmp.category = form.category.map((item) => item.label);
     tmp.material = form.material.map((item) => item.label);
+
+    //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
     if (typeof form.imgURL === "object") {
       await addImage(form.name, tmp.imgURL)
         .then(async (url) => {
@@ -92,6 +97,7 @@ function App() {
         setLoading(false);
         setMsg("UPLOAD SUCCESSFUL");
         getAllRecipes();
+        setTimeout(() => resetAll(), 5000);
       })
       .catch((e) => {
         setMsg("THERE IS AN ERROR", e);
@@ -102,11 +108,7 @@ function App() {
   useEffect(() => {
     console.log("fooorm", form);
   }, [form]);
-  useEffect(() => {
-    if (msg === "UPLOAD SUCCESSFUL") {
-      setTimeout(() => resetAll(), 2000);
-    }
-  }, [msg]);
+
   return (
     <div
       style={{
@@ -175,6 +177,8 @@ function App() {
         style={{
           width: "25%",
           height: "100%",
+          backgroundColor: "#d3d3d3",
+          padding: 10,
         }}
       >
         <RightComponent

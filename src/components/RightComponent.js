@@ -129,6 +129,7 @@ export default function RightComponent({
             color: "white",
             height: "50px",
             width: "50px",
+            marginLeft:20
           }}
           onClick={() => {
             handleClick();
