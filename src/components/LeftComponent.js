@@ -162,6 +162,11 @@ export default function LeftComponent({
         >
           delete
         </button>
+        <label
+          style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}
+        >
+          {recipe.garder_recette}
+        </label>
       </div>
     </div>
   );
