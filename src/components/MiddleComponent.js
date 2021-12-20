@@ -131,9 +131,9 @@ export default function MiddleComponent({ form, setForm }) {
                 setForm(tmp);
               }}
             >
-              <option value="facile">Facile</option>
-              <option value="moyenne">Moyenne</option>
-              <option value="difficile">Difficile</option>
+              <option value="Facile">Facile</option>
+              <option value="Moyenne">Moyenne</option>
+              <option value="Difficile">Difficile</option>
             </select>
           </div>
           <div style={{ display: "flex", marginTop: "20px", width: "100%" }}>

@@ -40,8 +40,8 @@ function App() {
 
     const tmp = { ...form };
     tmp.steps = stepsWithoutSpace;
-    tmp.category = form.category.map((item) => item.label);
-    tmp.material = form.material.map((item) => item.label);
+    tmp.category = form.category.forEach((item) => item.label);
+    tmp.material = form.material.forEach((item) => item.label);
 
     //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
     if (typeof form.imgURL === "object") {
@@ -156,15 +156,13 @@ function App() {
             .reverse()
             .map((item) => {
               return (
-                <>
-                  <LeftComponent
-                    recipe={item}
-                    recipes={recipes}
-                    setRecipes={setRecipes}
-                    setForm={setForm}
-                    setModifying={setModifying}
-                  />
-                </>
+                <LeftComponent
+                  key={item.name}
+                  recipe={item}
+                  setRecipes={setRecipes}
+                  setForm={setForm}
+                  setModifying={setModifying}
+                />
               );
             })}
         </div>

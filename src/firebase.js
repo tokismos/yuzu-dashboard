@@ -4,7 +4,6 @@ import { initializeApp } from "firebase/app";
 import {
   getStorage,
   ref,
-  uploadString,
   getDownloadURL,
   uploadBytes,
 } from "firebase/storage";
