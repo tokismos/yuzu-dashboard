@@ -66,12 +66,12 @@ export default function RightComponent({
             defaultValue={form.ingredients[index].unite}
             onChange={(e) => setUnite(e.target.value)}
           >
-            <option value="gramme">g</option>
-            <option value="cuillere">c à s</option>
+            <option value="g">g</option>
+            <option value="c à s">c à s</option>
             <option value="ml">Ml</option>
             <option value="l">L</option>
-            <option value="cac">c à c</option>
-            <option value="pincee">Pincée</option>
+            <option value="c à c">c à c</option>
+            <option value="pincée">Pincée</option>
           </select>
         </div>
         <div
@@ -129,7 +129,7 @@ export default function RightComponent({
             color: "white",
             height: "50px",
             width: "50px",
-            marginLeft:20
+            marginLeft: 20,
           }}
           onClick={() => {
             handleClick();
