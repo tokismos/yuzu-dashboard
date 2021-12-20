@@ -69,10 +69,10 @@ function App() {
       tempsPreparation: "",
       tempsCuisson: "",
       imgURL: "",
-      difficulty: "facile",
+      difficulty: "Facile",
       category: [],
       material: [],
-      ingredients: [{ name: "", quantity: "", unite: "gramme" }],
+      ingredients: [{ name: "", quantity: "", unite: "g" }],
     });
     setMsg("");
     setLoading(false);
