@@ -95,7 +95,7 @@ export default function RightComponent({
     const tmp = { ...form };
     tmp.ingredients = [
       ...tmp.ingredients,
-      { name: "", quantity: "", unite: "gramme" },
+      { name: "", quantity: "", unite: "g" },
     ];
     setForm(tmp);
     ref.current.scrollIntoView({ block: "center" });
@@ -175,7 +175,7 @@ export default function RightComponent({
               //3 secs
             />
           )}
-          {modifying ? "Modifier Recette " : " Ajouter La recette"}
+          {!!modifying ? "Modifier Recette " : " Ajouter La recette"}
         </button>
       </div>
     </div>

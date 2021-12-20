@@ -30,6 +30,16 @@ export default function MiddleComponent({ form, setForm }) {
   return (
     <>
       <DropZone form={form} setForm={setForm} />
+      <div style={{ alignSelf: "center" }}>
+        {form.website && (
+          <a href={form?.website} target="_blank">
+            Open website
+          </a>
+        )}
+        <label style={{ fontWeight: "bold", fontSize: 20, margin: 20 }}>
+          -{form?.number}
+        </label>
+      </div>
       <div
         style={{
           display: "flex",
@@ -78,18 +88,6 @@ export default function MiddleComponent({ form, setForm }) {
           <input
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
-            placeholder="T. Cuisson"
-            defaultValue={form.tempsCuisson}
-            value={form.tempsCuisson}
-            onChange={(e) => {
-              const tmp = { ...form };
-              tmp.tempsCuisson = e.target.value;
-              setForm(tmp);
-            }}
-          />
-          <input
-            style={{ fontSize: 20, display: "flex", width: "23%" }}
-            type="text"
             placeholder="T. Preparation"
             value={form.tempsPreparation}
             defaultValue={form.tempsPreparation}
@@ -99,6 +97,19 @@ export default function MiddleComponent({ form, setForm }) {
               setForm(tmp);
             }}
           />
+          <input
+            style={{ fontSize: 20, display: "flex", width: "23%" }}
+            type="text"
+            placeholder="T. Cuisson"
+            defaultValue={form.tempsCuisson}
+            value={form.tempsCuisson}
+            onChange={(e) => {
+              const tmp = { ...form };
+              tmp.tempsCuisson = e.target.value;
+              setForm(tmp);
+            }}
+          />
+
           <input
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"

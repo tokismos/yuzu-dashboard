@@ -20,33 +20,40 @@ export default function LeftComponent({
       arrMaterial.push({ label: item, value: item })
     );
     // ---
-    console.log("¡steps", recipe.steps);
 
-    let test = "";
+    let tmp = "";
     recipe.steps.map((item) => {
-      test = test + item + "\n\n\n";
+      tmp = tmp + item + "\n\n\n";
     });
-    console.log("erfae ", test);
 
     setForm({
       ...recipe,
       category: arrCategory,
       material: arrMaterial,
-      steps: test,
+      steps: tmp,
     });
-
-    console.log("reciiipes0d", recipe);
   };
 
-  const tempModify = () => {
+  const tempModify = async () => {
+    setModifying(2); // 2 to tell that we are modifiying from the temp Modify
     let nbrPersonne;
 
     let ingredients;
     let tempsCuisson;
     let tempsPreparation;
     let tempsAttente;
+    let nom_recette;
     console.log("this is the recipe clicked", recipe);
-    ingredients = recipe.ingredient.replace(/\'/g, "").split(",");
+    const tmpIngredient = recipe.ingredient.replace(/\'/g, "").split(",");
+    ingredients = tmpIngredient.map((item) => {
+      return {
+        name: item,
+        unite: "g",
+      };
+    });
+    const tmpName = recipe.nom_recette.replace(/\-/g, " ");
+    nom_recette = tmpName.charAt(0).toUpperCase() + tmpName.slice(1);
+
     console.log("newa", recipe);
     if (recipe.nombre_personne) {
       nbrPersonne = recipe?.nombre_personne?.match(/\d/g);
@@ -61,10 +68,26 @@ export default function LeftComponent({
       .split(",")
       .map((i) => i.match(/\d/g)?.join(""));
     tempsPreparation = newTemps[0];
-    tempsAttente = newTemps[1];
-    tempsCuisson = newTemps[2];
-    console.log("t", tempsPreparation, tempsAttente, tempsCuisson);
-    console.log(newTemps);
+    tempsCuisson = newTemps[1];
+    tempsAttente = newTemps[2];
+    console.log("this is recupe", recipe);
+
+    // to show the informations in the page
+    setForm({
+      _id: recipe._id,
+      website: recipe.lien_recette,
+      number: recipe.nom_figures,
+      name: nom_recette,
+      tempsPreparation: tempsPreparation,
+      tempsCuisson: tempsCuisson,
+      tempsAttente: tempsAttente.length == 4 ? "" : tempsAttente,
+      nbrPersonne: nbrPersonne,
+      difficulty: "Facile",
+      category: [],
+      material: [],
+      steps: [""],
+      ingredients: ingredients,
+    });
   };
 
   return (
@@ -107,7 +130,7 @@ export default function LeftComponent({
             display: "flex",
           }}
         >
-          {recipe?.name}
+          {recipe.nom_recette || recipe?.name}
         </label>
       </div>
       <div
@@ -118,7 +141,9 @@ export default function LeftComponent({
           justifyContent: "space-between",
         }}
       >
-        <button onClick={() => modify()}>Modifier</button>
+        <button onClick={recipe.nom_figures ? tempModify : modify}>
+          Modifier
+        </button>
         <button
           style={{ backgroundColor: "red", color: "white" }}
           onClick={async () => {

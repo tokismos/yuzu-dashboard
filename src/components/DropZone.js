@@ -24,8 +24,6 @@ const DropZone = ({ form, setForm }) => {
     onDrop: (acceptedFiles) => {
       setFiles(
         acceptedFiles.map(async (file) => {
-          console.log("thiiisiiiis iss fil", file);
-          console.log("files0", files);
           const tmp = { ...form };
           tmp.imgURL = file;
 

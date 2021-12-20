@@ -14,7 +14,7 @@ function App() {
     difficulty: "facile",
     category: [],
     material: [],
-    ingredients: [{ name: "", quantity: "", unite: "gramme" }],
+    ingredients: [{ name: "", quantity: "", unite: "g" }],
   });
   const [recipes, setRecipes] = useState([]);
   const [modifying, setModifying] = useState(false);
@@ -32,16 +32,12 @@ function App() {
   //Modifier la recette
   const modifyRecipe = async (setLoading, setMsg, setDisabled) => {
     //Transform the value of steps to an array
-    const stepsToArray = form?.steps?.split(/\r?\n/);
-    const stepsWithoutSpace = stepsToArray?.filter(
-      //detect the white spaces in a line
-      (item) => item.trim().length != 0
-    );
 
     const tmp = { ...form };
-    tmp.steps = stepsWithoutSpace;
-    tmp.category = form.category.forEach((item) => item.label);
-    tmp.material = form.material.forEach((item) => item.label);
+    console.log("fior cart", form.category);
+    tmp.category = form.category.map((item) => item.label);
+    tmp.material = form.material.map((item) => item.label);
+    console.log("TNMPSD", tmp);
 
     //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
     if (typeof form.imgURL === "object") {
@@ -53,11 +49,38 @@ function App() {
           setMsg("THERE IS AN ERROR", e);
         });
     }
-    await db.patch("/modify", tmp);
-
-    setMsg("Modified successful");
-    setLoading(false);
-    setDisabled(false);
+    //2 means we are modifying the scrapped db
+    if (modifying == 2) {
+      console.log("deleteeed from 222", form._id);
+      try {
+        await db.post(`/add`, tmp);
+        await db.delete(`/${form._id}`);
+        setLoading(false);
+        setDisabled(false);
+        setMsg("Modified successfuly");
+      } catch (e) {
+        setLoading(false);
+        setDisabled(false);
+        console.log("eeeeeeeeeeeeea", e.response.data.error.message);
+        setMsg("Error: ");
+        alert(e.response.data.error.message);
+      }
+    } else {
+      const stepsToArray = form?.steps?.split(/\r?\n/);
+      const stepsWithoutSpace = stepsToArray?.filter(
+        //detect the white spaces in a line
+        (item) => item.trim().length != 0
+      );
+      tmp.steps = stepsWithoutSpace;
+      try {
+        await db.patch("/modify", tmp);
+        setMsg("UPLOAD SUCCESSFUL");
+      } catch (e) {
+        alert(e.response.data.error.message);
+      }
+      setLoading(false);
+      setDisabled(false);
+    }
     getAllRecipes();
   };
   const resetAll = () => {
@@ -93,11 +116,19 @@ function App() {
         tmp.steps = stepsWithoutSpace;
         tmp.category = form.category.map((item) => item.label);
         tmp.material = form.material.map((item) => item.label);
-        await db.post("/add", tmp);
-        setLoading(false);
-        setMsg("UPLOAD SUCCESSFUL");
-        getAllRecipes();
-        setTimeout(() => resetAll(), 5000);
+        try {
+          await db.post("/add", tmp);
+          setLoading(false);
+          setMsg("UPLOAD SUCCESSFUL");
+          getAllRecipes();
+          setTimeout(() => resetAll(), 5000);
+        } catch (e) {
+          setLoading(false);
+          setDisabled(false);
+          console.log("error", e.response.data.error.message);
+          setMsg("Error: Not ADDED ");
+          alert(e.response.data.error.message);
+        }
       })
       .catch((e) => {
         setMsg("THERE IS AN ERROR", e);
