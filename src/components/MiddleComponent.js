@@ -20,11 +20,15 @@ export default function MiddleComponent({ form, setForm }) {
     { label: "vegan", value: "vegan" },
   ];
   const optionsMateriel = [
-    { label: "four", value: "four" },
-    { label: "microOnde", value: "microOnde" },
-    { label: "mixeur", value: "mixeur" },
-    { label: "robotCuisseur", value: "robotCuisseur" },
-    { label: "friteuse", value: "friteuse" },
+    { label: "Four", value: "Four" },
+    { label: " Micro-Ondes", value: "Micro-Ondes" },
+    { label: "Mixeur", value: "Mixeur" },
+    { label: "Robot cuiseur", value: "Robot cuiseur" },
+    { label: "Friteuse", value: "Friteuse" },
+    {
+      label: "Batteur électrique ou fouet",
+      value: "Batteur électrique ou fouet",
+    },
   ];
 
   return (
