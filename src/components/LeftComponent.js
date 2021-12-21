@@ -87,7 +87,7 @@ export default function LeftComponent({
       name: nom_recette,
       tempsPreparation: tempsPreparation,
       tempsCuisson: tempsCuisson,
-      tempsAttente: tempsAttente.length == 4 ? "" : tempsAttente,
+      tempsAttente: tempsAttente?.length == 4 ? "" : tempsAttente,
       nbrPersonne: nbrPersonne,
       difficulty: "Facile",
       category: [],

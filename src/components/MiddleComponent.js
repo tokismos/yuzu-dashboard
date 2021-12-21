@@ -3,9 +3,6 @@ import DropZone from "./DropZone";
 import { MultiSelect } from "react-multi-select-component";
 
 export default function MiddleComponent({ form, setForm }) {
-  const [selectedCategorie, setSelectedCategorie] = useState([]);
-  const [selectedMaterial, setSelectedMaterial] = useState([]);
-
   const customValueRenderer = (selected, _options) => {
     return selected.length
       ? selected.map(({ label }) => "✔️ " + label)
