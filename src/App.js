@@ -181,7 +181,9 @@ function App() {
               if (searchTerm == "") {
                 return item;
               } else if (
-                item.name.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+                item?.name
+                  ?.toLowerCase()
+                  .includes(searchTerm.toLocaleLowerCase())
               ) {
                 return item;
               }
