@@ -72,6 +72,7 @@ export default function RightComponent({
             <option value="l">L</option>
             <option value="c à c">c à c</option>
             <option value="pincée">Pincée</option>
+            <option value="unite">Unite</option>
           </select>
         </div>
         <div
