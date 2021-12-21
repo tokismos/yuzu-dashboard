@@ -1,4 +1,5 @@
 import React from "react";
+import { scryRenderedDOMComponentsWithTag } from "react-dom/test-utils";
 import { useEffect } from "react/cjs/react.development";
 import { db } from "../axios";
 
@@ -7,8 +8,12 @@ export default function LeftComponent({
   setForm,
   setModifying,
   setRecipes,
+  setDisabled,
+  setMsg,
 }) {
   const modify = () => {
+    console.log("HOOLA");
+    setDisabled(false);
     setModifying(true);
     let arrCategory = [];
     let arrMaterial = [];
@@ -36,6 +41,8 @@ export default function LeftComponent({
 
   const tempModify = async () => {
     setModifying(2); // 2 to tell that we are modifiying from the temp Modify
+    setMsg("");
+    setDisabled(false);
     let nbrPersonne;
 
     let ingredients;
@@ -85,7 +92,7 @@ export default function LeftComponent({
       difficulty: "Facile",
       category: [],
       material: [],
-      steps: [""],
+      steps: [],
       ingredients: ingredients,
     });
   };

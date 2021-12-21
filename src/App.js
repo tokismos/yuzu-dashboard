@@ -37,6 +37,12 @@ function App() {
     console.log("fior cart", form.category);
     tmp.category = form.category.map((item) => item.label);
     tmp.material = form.material.map((item) => item.label);
+    const stepsToArray = form.steps?.split(/\r?\n/);
+    const stepsWithoutSpace = stepsToArray?.filter(
+      //detect the white spaces in a line
+      (item) => item.trim().length != 0
+    );
+    tmp.steps = stepsWithoutSpace;
     console.log("TNMPSD", tmp);
 
     //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
@@ -52,11 +58,11 @@ function App() {
     //2 means we are modifying the scrapped db
     if (modifying == 2) {
       console.log("deleteeed from 222", form._id);
+
       try {
         await db.post(`/add`, tmp);
         await db.delete(`/${form._id}`);
         setLoading(false);
-        setDisabled(false);
         setMsg("Modified successfuly");
       } catch (e) {
         setLoading(false);
@@ -66,12 +72,7 @@ function App() {
         alert(e.response.data.error.message);
       }
     } else {
-      const stepsToArray = form?.steps?.split(/\r?\n/);
-      const stepsWithoutSpace = stepsToArray?.filter(
-        //detect the white spaces in a line
-        (item) => item.trim().length != 0
-      );
-      tmp.steps = stepsWithoutSpace;
+      console.log("this iiiiiiiis tm,p0", tmp);
       try {
         await db.patch("/modify", tmp);
         setMsg("UPLOAD SUCCESSFUL");
@@ -101,6 +102,8 @@ function App() {
     setLoading(false);
     setDisabled(false);
   };
+
+  //ADD THE RECIPE
   const handleSubmit = () => {
     const stepsToArray = form?.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
@@ -119,13 +122,12 @@ function App() {
         try {
           await db.post("/add", tmp);
           setLoading(false);
-          setMsg("UPLOAD SUCCESSFUL");
+          setMsg("UPLOAD SUCCESSFUL,WAIT 5s !!!!");
           getAllRecipes();
           setTimeout(() => resetAll(), 5000);
         } catch (e) {
           setLoading(false);
           setDisabled(false);
-          console.log("error", e.response.data.error.message);
           setMsg("Error: Not ADDED ");
           alert(e.response.data.error.message);
         }
@@ -193,6 +195,8 @@ function App() {
                   setRecipes={setRecipes}
                   setForm={setForm}
                   setModifying={setModifying}
+                  setDisabled={setDisabled}
+                  setMsg={setMsg}
                 />
               );
             })}
