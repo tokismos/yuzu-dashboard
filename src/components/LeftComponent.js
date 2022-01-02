@@ -74,9 +74,9 @@ export default function LeftComponent({
     //   ?.replace(/\'/g, "")
     //   .split(",")
     //   .map((i) => i.match(/\d/g)?.join(""));
-    tempsPreparation = recipe?.temps_preparation_attente_cuisson[0];
-    tempsCuisson = recipe?.temps_preparation_attente_cuisson[1];
-    tempsAttente = recipe?.temps_preparation_attente_cuisson[2];
+    tempsPreparation = +recipe?.temps_preparation_attente_cuisson[0];
+    tempsCuisson = +recipe?.temps_preparation_attente_cuisson[1];
+    tempsAttente = +recipe?.temps_preparation_attente_cuisson[2];
 
     // to show the informations in the page
     setForm({
@@ -84,9 +84,9 @@ export default function LeftComponent({
       website: recipe.lien_recette,
       number: recipe.nom_figures,
       name: nom_recette,
-      tempsPreparation: tempsPreparation ? tempsPreparation : "",
-      tempsCuisson: tempsCuisson ? tempsCuisson : "",
-      tempsAttente: tempsAttente ? tempsAttente : "",
+      tempsPreparation: tempsPreparation ? tempsPreparation : 0,
+      tempsCuisson: tempsCuisson ? tempsCuisson : 0,
+      tempsAttente: tempsAttente ? tempsAttente : 0,
       nbrPersonne: nbrPersonne,
       difficulty: "Facile",
       category: [],
