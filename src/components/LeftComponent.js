@@ -64,20 +64,19 @@ export default function LeftComponent({
     console.log("newa", recipe);
     if (recipe.nombre_personne) {
       nbrPersonne = recipe?.nombre_personne?.match(/\d/g);
-      nbrPersonne = nbrPersonne.join("");
+      nbrPersonne = nbrPersonne?.join("");
       console.log("new", nbrPersonne);
     } else {
       console.log("nb personne not found");
     }
-    let newTemps = recipe.temps_preparation_attente_cuisson
-      .replace(/\'/g, "")
-
-      .split(",")
-      .map((i) => i.match(/\d/g)?.join(""));
-    tempsPreparation = newTemps[0];
-    tempsCuisson = newTemps[1];
-    tempsAttente = newTemps[2];
-    console.log("this is recupe", recipe);
+    console.log("this is recupe", recipe?.temps_preparation_attente_cuisson);
+    // let newTemps = recipe?.temps_preparation_attente_cuisson
+    //   ?.replace(/\'/g, "")
+    //   .split(",")
+    //   .map((i) => i.match(/\d/g)?.join(""));
+    tempsPreparation = recipe?.temps_preparation_attente_cuisson[0];
+    tempsCuisson = recipe?.temps_preparation_attente_cuisson[1];
+    tempsAttente = recipe?.temps_preparation_attente_cuisson[2];
 
     // to show the informations in the page
     setForm({
@@ -85,9 +84,9 @@ export default function LeftComponent({
       website: recipe.lien_recette,
       number: recipe.nom_figures,
       name: nom_recette,
-      tempsPreparation: tempsPreparation,
-      tempsCuisson: tempsCuisson,
-      tempsAttente: tempsAttente?.length == 4 ? "" : tempsAttente,
+      tempsPreparation: tempsPreparation ? tempsPreparation : "",
+      tempsCuisson: tempsCuisson ? tempsCuisson : "",
+      tempsAttente: tempsAttente ? tempsAttente : "",
       nbrPersonne: nbrPersonne,
       difficulty: "Facile",
       category: [],
