@@ -127,6 +127,7 @@ export default function LeftComponent({
           justifyContent: "center",
           display: "flex",
           flex: 1,
+          flexDirection: "column",
         }}
       >
         <label
@@ -138,6 +139,22 @@ export default function LeftComponent({
         >
           {recipe.nom_recette || recipe?.name}
         </label>
+        {recipe.stats && (
+          <label
+            style={{
+              color: "gray",
+              textAlign: "center",
+              marginTop: "20px",
+            }}
+          >
+            Liked by{" "}
+            {parseInt(
+              (recipe.stats.nbrRight * 100) /
+                (recipe.stats.nbrRight + recipe.stats.nbrLeft)
+            )}
+            %
+          </label>
+        )}
       </div>
       <div
         style={{
