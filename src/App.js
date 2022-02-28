@@ -88,6 +88,7 @@ function App() {
     setForm({
       steps: [],
       name: "",
+      chefName: "",
       nbrPersonne: "",
       tempsAttente: "",
       tempsPreparation: "",

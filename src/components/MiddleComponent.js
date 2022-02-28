@@ -50,21 +50,38 @@ export default function MiddleComponent({ form, setForm }) {
           marginTop: "20px",
         }}
       >
-        <input
-          style={{
-            width: "90%",
-            height: "50px",
-            fontSize: 20,
-          }}
-          value={form.name}
-          type="text"
-          placeholder="Nom de la recette"
-          onChange={(e) => {
-            const tmp = { ...form };
-            tmp.name = e.target.value;
-            setForm(tmp);
-          }}
-        />
+        <div style={{ display: "flex", width: "100%" }}>
+          <input
+            style={{
+              width: "90%",
+              height: "50px",
+              fontSize: 20,
+            }}
+            value={form.name}
+            type="text"
+            placeholder="Nom de la recette"
+            onChange={(e) => {
+              const tmp = { ...form };
+              tmp.name = e.target.value;
+              setForm(tmp);
+            }}
+          />
+          <input
+            style={{
+              width: "40%",
+              height: "50px",
+              fontSize: 20,
+            }}
+            value={form.chefName}
+            type="text"
+            placeholder="Nom du chef"
+            onChange={(e) => {
+              const tmp = { ...form };
+              tmp.chefName = e.target.value;
+              setForm(tmp);
+            }}
+          />
+        </div>
         <div
           style={{
             width: "90%",
