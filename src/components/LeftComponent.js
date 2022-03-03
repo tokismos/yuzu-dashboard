@@ -152,7 +152,7 @@ export default function LeftComponent({
               (recipe.stats.nbrRight * 100) /
                 (recipe.stats.nbrRight + recipe.stats.nbrLeft)
             )}
-            %
+            % --- {recipe.stats.nbrRight}
           </label>
         )}
       </div>
