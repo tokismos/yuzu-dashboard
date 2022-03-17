@@ -1,6 +1,5 @@
-import React from "react";
-import { scryRenderedDOMComponentsWithTag } from "react-dom/test-utils";
-import { useEffect } from "react/cjs/react.development";
+import React, { useState } from "react";
+
 import { db } from "../axios";
 
 export default function LeftComponent({
@@ -38,7 +37,7 @@ export default function LeftComponent({
       steps: tmp,
     });
   };
-
+  console.log("RECUOPE", recipe);
   const tempModify = async () => {
     setModifying(2); // 2 to tell that we are modifiying from the temp Modify
     setMsg("");
@@ -96,10 +95,20 @@ export default function LeftComponent({
     });
   };
 
+  const toggleVisible = async (id, value) => {
+    try {
+      await db.patch(`/toggleVisible/${id}/${value}`);
+    } catch (e) {
+      console.log("There is an error.", e);
+    }
+  };
+
+  const [isVisible, setIsVisible] = useState(recipe.isVisible);
+
   return (
     <div
       style={{
-        backgroundColor: "white",
+        backgroundColor: isVisible ? "white" : "gray",
         height: "10vh",
         display: "flex",
         width: "90%",
@@ -184,6 +193,19 @@ export default function LeftComponent({
           }}
         >
           delete
+        </button>
+        <button
+          onClick={() => {
+            if (isVisible) {
+              toggleVisible(recipe._id, false);
+              setIsVisible(false);
+            } else {
+              toggleVisible(recipe._id, true);
+              setIsVisible(true);
+            }
+          }}
+        >
+          {isVisible ? "Desactiver" : "Activer"}
         </button>
         <label
           style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}

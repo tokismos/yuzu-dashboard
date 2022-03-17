@@ -20,7 +20,7 @@ function App() {
   const [modifying, setModifying] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const getAllRecipes = async () => {
-    const result = await db.get("/");
+    const result = await db.get("/all");
     console.log("res", result);
     setRecipes(result.data);
   };

@@ -155,6 +155,7 @@ export default function RightComponent({
             setLoading(true);
             setDisabled(true);
             onClick(setLoading, setMsg, setDisabled);
+            console.log("HOOHOO", form);
           }}
           style={{
             backgroundColor: disabled ? "gray" : "orange",
