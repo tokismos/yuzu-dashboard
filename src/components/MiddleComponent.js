@@ -18,7 +18,7 @@ export default function MiddleComponent({ form, setForm }) {
   ];
   const optionsMateriel = [
     { label: "Four", value: "Four" },
-    { label: " Micro-Ondes", value: "Micro-Ondes" },
+    { label: "Micro-Ondes", value: "Micro-Ondes" },
     { label: "Mixeur", value: "Mixeur" },
     { label: "Robot cuiseur", value: "Robot cuiseur" },
     { label: "Friteuse", value: "Friteuse" },

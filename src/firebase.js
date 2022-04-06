@@ -1,21 +1,18 @@
 import { initializeApp } from "firebase/app";
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
-import {
-  getStorage,
-  ref,
-  getDownloadURL,
-  uploadBytes,
-} from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC_Khzc-fgbnfetYLwwdkSiNYPuRVjbdN8",
-  authDomain: "yuzu-a0d71.firebaseapp.com",
-  projectId: "yuzu-a0d71",
-  storageBucket: "yuzu-a0d71.appspot.com",
-  messagingSenderId: "768418404122",
-  appId: "1:768418404122:web:07f4cd1177316436107ea3",
+  apiKey: "AIzaSyDp2NnsdP0i01XwJMmSynmmSrC_R23MUiQ",
+  authDomain: "yuzu-5720e.firebaseapp.com",
+  databaseURL: "https://yuzu-5720e-default-rtdb.firebaseio.com",
+  projectId: "yuzu-5720e",
+  storageBucket: "yuzu-5720e.appspot.com",
+  messagingSenderId: "246034960415",
+  appId: "1:246034960415:web:c4aa304ce2a2bc379bc52a",
+  measurementId: "G-N0G4M012VE",
 };
 console.log("firevbase initialid");
 const app = initializeApp(firebaseConfig);
