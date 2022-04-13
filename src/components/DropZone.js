@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import ReactPlayer from "react-player";
 
-const DropZone = ({ form, setForm }) => {
+const DropZone = ({ form, setForm, video }) => {
   const [files, setFiles] = useState([]);
   const [img, setImg] = useState("");
 
@@ -20,14 +21,17 @@ const DropZone = ({ form, setForm }) => {
   };
   const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
-    accept: "image/*",
+    accept: !video ? "image/*" : "video/*",
     onDrop: (acceptedFiles) => {
       setFiles(
         acceptedFiles.map(async (file) => {
           const tmp = { ...form };
-          tmp.imgURL = file;
-
-          console.log("formtmp ", URL.createObjectURL(file));
+          if (video) {
+            tmp.videoURL = file;
+          } else {
+            tmp.imgURL = file;
+          }
+          console.log("formtmp ", file.name);
           setImg(URL.createObjectURL(file));
           setForm(tmp);
         })
@@ -35,10 +39,10 @@ const DropZone = ({ form, setForm }) => {
     },
   });
 
-  useEffect(() => {}, [files]);
   const images = files.map((file) => (
     <div key={file?.name}>
       <div>
+        {file.name}
         <img
           src={typeof form.imgURL !== "object" ? form.imgURL : img}
           style={{
@@ -51,6 +55,13 @@ const DropZone = ({ form, setForm }) => {
       </div>
     </div>
   ));
+  const videoComponent = files.map((file) => (
+    <div key={file?.name}>
+      <div>
+        <ReactPlayer url={img} controls={true} width="200px" height="200px" />
+      </div>
+    </div>
+  ));
 
   return (
     <div
@@ -60,13 +71,15 @@ const DropZone = ({ form, setForm }) => {
         width: "100%",
         height: "25%",
         alignItems: "center",
+        justifyContent: "flex-end",
+        marginBottom: "50px",
       }}
     >
       <div {...getRootProps({ style: baseStyle })}>
         <input {...getInputProps()} />
         <p>Drop files here</p>
       </div>
-      <div>{images}</div>
+      {video ? <div>{videoComponent}</div> : <div>{images}</div>}
     </div>
   );
 };

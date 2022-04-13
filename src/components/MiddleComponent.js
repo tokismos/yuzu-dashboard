@@ -31,6 +31,12 @@ export default function MiddleComponent({ form, setForm }) {
   return (
     <>
       <DropZone form={form} setForm={setForm} />
+      {typeof form.videoURL !== "object" && (
+        <a href={form.videoURL} target="_blank">
+          {form.videoURL ? "Lien video" : ""}
+        </a>
+      )}
+      <DropZone form={form} setForm={setForm} video />
       <div style={{ alignSelf: "center" }}>
         {form.website && (
           <a href={form?.website} target="_blank">
@@ -107,8 +113,8 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Preparation"
-            value={form.tempsPreparation}
-            defaultValue={form.tempsPreparation}
+            value={form?.tempsPreparation}
+            defaultValue={form?.tempsPreparation}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsPreparation = e.target.value;
@@ -119,8 +125,8 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Cuisson"
-            defaultValue={form.tempsCuisson}
-            value={form.tempsCuisson}
+            defaultValue={form?.tempsCuisson}
+            value={form?.tempsCuisson}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsCuisson = e.target.value;
@@ -132,8 +138,8 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Attente"
-            value={form.tempsAttente}
-            defaultValue={form.tempsAttente}
+            value={form?.tempsAttente}
+            defaultValue={form?.tempsAttente}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsAttente = e.target.value;

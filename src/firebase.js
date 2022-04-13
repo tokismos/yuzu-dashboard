@@ -17,21 +17,57 @@ const firebaseConfig = {
 console.log("firevbase initialid");
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
+let downloadUrlImage;
+let downloadUrlVideo;
+const addImage = async (name, imageURL, videoURL) => {
+  let i;
+  const uploadVideoPromise = new Promise((resolve, reject) => {
+    if (videoURL) {
+      const videoRef = ref(storage, `recettes/${videoURL.name}`);
 
-const addImage = async (name, imageURL) => {
+      uploadBytes(videoRef, videoURL).then((snapshot) => {
+        console.log("Uploaded a blob or file!", snapshot);
+        getDownloadURL(videoRef)
+          .then((downloadURL) => {
+            console.log("download", downloadURL);
+            downloadUrlVideo = downloadURL;
+            resolve(downloadURL);
+          })
+          .catch((e) => reject("ER"));
+      });
+    } else {
+      resolve();
+    }
+  });
+
+  const uploadImgPromise = new Promise((resolve, reject) => {
+    if (imageURL) {
+      const imagesRef = ref(storage, `recettes/${name}`);
+
+      uploadBytes(imagesRef, imageURL).then((snapshot) => {
+        console.log("Uploaded a blob or file!", snapshot);
+        getDownloadURL(imagesRef)
+          .then((downloadURL) => {
+            console.log("download", downloadURL);
+            downloadUrlImage = downloadURL;
+            resolve(downloadURL);
+          })
+          .catch((e) => reject("ER"));
+      });
+    } else {
+      resolve();
+    }
+  });
   return new Promise(function (resolve, reject) {
-    const imagesRef = ref(storage, `recettes/${name}`);
+    // let uploadVideoPromise = resolve();
 
-    uploadBytes(imagesRef, imageURL).then((snapshot) => {
-      console.log("Uploaded a blob or file!", snapshot);
-      getDownloadURL(imagesRef)
-        .then((downloadURL) => {
-          console.log("download", downloadURL);
-          resolve(downloadURL);
-        })
-        .catch((e) => reject("ER"));
+    // console.log("kayn", videoURL);
+
+    Promise.all([uploadImgPromise, uploadVideoPromise]).then((values) => {
+      console.log("chbk", values);
+      resolve(values);
     });
-    console.log("imageURL0", imageURL);
+    console.log("imageURL0", downloadUrlImage);
   });
 };
 

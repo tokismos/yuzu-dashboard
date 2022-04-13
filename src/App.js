@@ -47,9 +47,25 @@ function App() {
 
     //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
     if (typeof form.imgURL === "object") {
-      await addImage(form.name, tmp.imgURL)
+      await addImage(form.name, tmp.imgURL, tmp.videoURL)
         .then(async (url) => {
-          tmp.imgURL = url;
+          console.log("ARoy", JSON.stringify(url));
+          tmp.imgURL = url[0];
+          // tmp.videoURL = url[1];
+          console.log("jwan", url[1]);
+        })
+        .catch((e) => {
+          setMsg("THERE IS AN ERROR", e);
+        });
+    }
+    if (typeof form.videoURL === "object") {
+      console.log("WALO");
+      await addImage(form.name, false, tmp.videoURL)
+        .then(async (url) => {
+          console.log("ARoy", JSON.stringify(url));
+          // tmp.imgURL = url[0];
+          tmp.videoURL = url[1];
+          console.log("jwan", url[1]);
         })
         .catch((e) => {
           setMsg("THERE IS AN ERROR", e);
@@ -113,10 +129,14 @@ function App() {
     );
     const tmp = { ...form };
     //we wait add image to storage to get url then call the post api to add to mongoDB
-
-    addImage(form.name, tmp.imgURL)
+    console.log("ORF", tmp);
+    addImage(form.name, tmp.imgURL, tmp.videoURL)
       .then(async (url) => {
-        tmp.imgURL = url;
+        console.log("ohio", url);
+        tmp.imgURL = url[0];
+        if (url[1]) {
+          tmp.videoURL = url[1];
+        }
         tmp.steps = stepsWithoutSpace;
         tmp.category = form.category.map((item) => item.label);
         tmp.material = form.material.map((item) => item.label);
