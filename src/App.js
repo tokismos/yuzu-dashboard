@@ -37,13 +37,15 @@ function App() {
     console.log("fior cart", form.category);
     tmp.category = form.category.map((item) => item.label);
     tmp.material = form.material.map((item) => item.label);
+    tmp.tempsTotal =
+      +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;
+
     const stepsToArray = form.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
       //detect the white spaces in a line
       (item) => item.trim().length != 0
     );
     tmp.steps = stepsWithoutSpace;
-    console.log("TNMPSD", tmp);
 
     //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
     if (typeof form.imgURL === "object") {
@@ -52,7 +54,6 @@ function App() {
           console.log("ARoy", JSON.stringify(url));
           tmp.imgURL = url[0];
           // tmp.videoURL = url[1];
-          console.log("jwan", url[1]);
         })
         .catch((e) => {
           setMsg("THERE IS AN ERROR", e);
@@ -140,6 +141,9 @@ function App() {
         tmp.steps = stepsWithoutSpace;
         tmp.category = form.category.map((item) => item.label);
         tmp.material = form.material.map((item) => item.label);
+        tmp.tempsTotal =
+          +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;
+
         try {
           await db.post("/add", tmp);
           setLoading(false);
@@ -159,9 +163,6 @@ function App() {
         setDisabled(false);
       });
   };
-  useEffect(() => {
-    console.log("fooorm", form);
-  }, [form]);
 
   return (
     <div
