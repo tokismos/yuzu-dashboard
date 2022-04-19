@@ -183,7 +183,7 @@ function App() {
         }}
       >
         <input
-          placeholder={`Chercher une recette`}
+          placeholder={`chercherr une recette`}
           onChange={(e) => setSearchTerm(e.target.value)}
           type="text"
           style={{
