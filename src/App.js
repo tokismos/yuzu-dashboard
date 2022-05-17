@@ -19,6 +19,7 @@ function App() {
     const [form, setForm] = useState({
         difficulty: "facile",
         category: [],
+        regime: [],
         material: [],
         ingredients: [{ name: "", quantity: "", unite: "g" }],
     });
@@ -40,8 +41,8 @@ function App() {
         //Transform the value of steps to an array
 
         const tmp = { ...form };
-        console.log("fior cart", form.category);
         tmp.category = form.category.map((item) => item.label);
+        tmp.regime = form.regime.map((item) => item.label);
         tmp.material = form.material.map((item) => item.label);
         tmp.tempsTotal =
             +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;
@@ -49,7 +50,7 @@ function App() {
         const stepsToArray = form.steps?.split(/\r?\n/);
         const stepsWithoutSpace = stepsToArray?.filter(
             //detect the white spaces in a line
-            (item) => item.trim().length != 0
+            (item) => item.trim().length !== 0
         );
         tmp.steps = stepsWithoutSpace;
 
@@ -119,6 +120,7 @@ function App() {
             imgURL: "",
             difficulty: "Facile",
             category: [],
+            regime: [],
             material: [],
             ingredients: [{ name: "", quantity: "", unite: "g" }],
         });
@@ -146,6 +148,7 @@ function App() {
                 }
                 tmp.steps = stepsWithoutSpace;
                 tmp.category = form.category.map((item) => item.label);
+                tmp.regime = form.regime.map((item) => item.label);
                 tmp.material = form.material.map((item) => item.label);
                 tmp.tempsTotal =
                     +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;

@@ -9,13 +9,24 @@ export default function MiddleComponent({ form, setForm }) {
       : "😶 No Items Selected";
   };
 
-  const optionsCategorie = [
+  const optionsRegime = [
     { label: "viande", value: "viande" },
     { label: "poisson", value: "poisson" },
     { label: "vegetarien", value: "vegetarien" },
     { label: "sansGluten", value: "sansGluten" },
     { label: "vegan", value: "vegan" },
   ];
+
+  const optionCategory = [
+      { label: "Petit dej & brunch", value: "breakfast" },
+      { label: "Apéritif", value: "aperitif" },
+      { label: "Entrées", value: "starters" },
+      { label: "Plats principaux", value: "main" },
+      { label: "Dessert", value: "dessert" },
+      { label: "Boisson & Cocktail", value: "drinks" },
+      { label: "Snacks", value: "snacks" },
+  ]
+
   const optionsMateriel = [
     { label: "Four", value: "Four" },
     { label: "Micro-Ondes", value: "Micro-Ondes" },
@@ -172,14 +183,14 @@ export default function MiddleComponent({ form, setForm }) {
             </select>
           </div>
           <div style={{ display: "flex", marginTop: "20px", width: "100%" }}>
-            <label style={{ marginRight: 20 }}>Categorie:</label>
+            <label style={{ marginRight: 20 }}>Regime:</label>
             <MultiSelect
               className="multiInput"
-              options={optionsCategorie}
+              options={optionsRegime}
               labelledBy="Select"
-              value={form?.category}
+              value={form?.regime}
               onChange={(item) => {
-                setForm({ ...form, category: item });
+                setForm({ ...form, regime: item });
               }}
               hasSelectAll={false}
               shouldToggleOnHover
@@ -187,6 +198,22 @@ export default function MiddleComponent({ form, setForm }) {
               disableSearch
             />
           </div>
+            <div style={{ display: "flex", marginTop: "20px", width: "100%" }}>
+                <label style={{ marginRight: 20 }}>Catégories:</label>
+                <MultiSelect
+                    className="multiInput"
+                    options={optionCategory}
+                    labelledBy="Select"
+                    value={form?.category}
+                    onChange={item => {
+                        setForm({ ...form, category: item })
+                    }}
+                    hasSelectAll={false}
+                    shouldToggleOnHover
+                    valueRenderer={customValueRenderer}
+                    disableSearch
+                />
+            </div>
           <div
             style={{ display: "flex", flexDirection: "row", marginTop: "20px" }}
           >
