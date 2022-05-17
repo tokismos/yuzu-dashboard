@@ -11,7 +11,7 @@ import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
 
 function App() {
-    const { token, setToken } = useToken();
+    const { token, isValidToken, setToken } = useToken();
 
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -172,7 +172,7 @@ function App() {
 
     useEffect(() => {console.log('salut')}, [token])
 
-    if (!token) return <Login setToken={setToken} />
+    if (!isValidToken()) return <Login setToken={setToken} />
     return (
         <div
             style={{
