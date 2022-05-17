@@ -20,7 +20,6 @@ const storage = getStorage(app);
 let downloadUrlImage;
 let downloadUrlVideo;
 const addImage = async (name, imageURL, videoURL) => {
-  let i;
   const uploadVideoPromise = new Promise((resolve, reject) => {
     if (videoURL) {
       const videoRef = ref(storage, `recettes/${videoURL.name}`);
