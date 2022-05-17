@@ -1,51 +1,43 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 
 import './Login.css';
 
+require('dotenv').config();
+
 const Login = ({ setToken }) => {
-    const [username, setUsername] = useState();
-    const [password, setPassword] = useState();
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    const handleGoogleSubmit = async () => {
         try {
-            const {token, err} = await fetch('http://localhost:3001/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            }).then(data => data.json())
+            const result = await signInWithPopup(auth, provider);
 
-            if (!err)  {
-                setToken(token);
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            const user = result.user;
+
+            const authorizedUser = process.env.REACT_APP_AUTHORIZED_USER;
+
+            if (user.uid === authorizedUser) {
+                setToken(user.uid);
                 window.location.reload();
-            } else {
-                setToken(null);
             }
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+
+            const email = error.email;
+            const credential = GoogleAuthProvider.credentialFromError(error)
+
+            console.error({ errorCode, errorMessage, email, credential });
         }
     }
 
     return (
         <div className="login-wrapper">
             <h1>Please Log In</h1>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    <p>Username</p>
-                    <input type="text" onChange={e => setUsername(e.target.value)} />
-                </label>
-                <label>
-                    <p>Password</p>
-                    <input type="password" onChange={e => setPassword(e.target.value)} />
-                </label>
-                <div>
-                    <button type="submit">Submit</button>
-                </div>
-            </form>
+            <button onClick={handleGoogleSubmit }>Google Submit</button>
         </div>
     )
 }

@@ -37,7 +37,6 @@ export default function LeftComponent({
       steps: tmp,
     });
   };
-  console.log("RECUOPE", recipe);
   const tempModify = async () => {
     setModifying(2); // 2 to tell that we are modifiying from the temp Modify
     setMsg("");
