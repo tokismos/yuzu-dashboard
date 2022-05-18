@@ -220,7 +220,7 @@ function App() {
                 <div style={{ overflowY: "scroll", width: "100%", padding: 0 }}>
                     {recipes
                         .filter((item) => {
-                            if (searchTerm == "") {
+                            if (searchTerm === "") {
                                 return item;
                             } else if (
                                 item?.name
