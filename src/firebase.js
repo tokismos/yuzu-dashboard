@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
-// Follow this pattern to import other Firebase services
-// import { } from 'firebase/<service>';
+import { getDatabase, ref as dbRef, get, child } from 'firebase/database';
 import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 // TODO: Replace the following with your app's Firebase project configuration
@@ -19,6 +18,42 @@ const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 let downloadUrlImage;
 let downloadUrlVideo;
+
+const getRecipeRating = async () => {
+  try {
+    const refDatabase = dbRef(getDatabase())
+    const snapshot = await get(child(refDatabase, '/rate'))
+
+    if (snapshot.exists()) {
+      /**
+       * @name recipesRates
+       * @type {{ recipeID_1: number, recipeID_2: number, recipeID_n: number }}
+       *
+       * is an object with all recipes rate, order by recipes key
+       *
+       * {
+       *     recipe_1: 3,
+       *     recipe_2: 4
+       * }
+       */
+      const recipesRates = Object.entries(snapshot.val()).reduce((acc, val) => {
+        const rates = Object.values(val[1]);
+        const sum = rates.reduce((toSum, newRate) => toSum + newRate.rate, 0);
+
+        acc[val[0]] = sum / rates.length;
+        return acc;
+      }, {});
+
+      const ratedLen = Object.keys(recipesRates).length;
+      const average = Object.values(recipesRates).reduce((sum, val) => sum + val, 0) / ratedLen;
+
+      return { average, recipesRates, ratedLen  };
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 const addImage = async (name, imageURL, videoURL) => {
   let i;
   const uploadVideoPromise = new Promise((resolve, reject) => {
@@ -71,4 +106,4 @@ const addImage = async (name, imageURL, videoURL) => {
   });
 };
 
-export { addImage };
+export { addImage, getRecipeRating };

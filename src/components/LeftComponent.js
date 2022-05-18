@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 
 import { db } from "../axios";
 
@@ -9,9 +9,9 @@ export default function LeftComponent({
   setRecipes,
   setDisabled,
   setMsg,
+    rate
 }) {
   const modify = () => {
-    console.log("HOOLA");
     setDisabled(false);
     setModifying(true);
     let arrCategory = [];
@@ -37,6 +37,7 @@ export default function LeftComponent({
       steps: tmp,
     });
   };
+
   const tempModify = async () => {
     setModifying(2); // 2 to tell that we are modifiying from the temp Modify
     setMsg("");
@@ -160,7 +161,7 @@ export default function LeftComponent({
               (recipe.stats.nbrRight * 100) /
                 (recipe.stats.nbrRight + recipe.stats.nbrLeft)
             )}
-            % --- {recipe.stats.nbrRight}
+            % {recipe.stats.nbrRight}
           </label>
         )}
       </div>
@@ -211,6 +212,8 @@ export default function LeftComponent({
         >
           {recipe.garder_recette}
         </label>
+
+        <label>Note: {rate || "Non noté"}</label>
       </div>
     </div>
   );
