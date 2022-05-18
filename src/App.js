@@ -4,8 +4,8 @@ import "./App.css";
 import Login from "./screen/Login/Login";
 
 import useToken from './hooks/useToken';
-import {db} from "./axios";
-import {addImage} from "./firebase";
+import { db } from "./axios";
+import { addImage, getRecipeRating } from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
@@ -13,6 +13,9 @@ import RightComponent from "./components/RightComponent";
 function App() {
     const { token, isValidToken, setToken } = useToken();
 
+    const [averageRating, setAverageRating] = useState(0);
+    const [ratedLen, setRatedLen] = useState(0);
+    const [rated, setRated] = useState({});
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState("");
@@ -34,6 +37,14 @@ function App() {
 
     useEffect(() => {
         getAllRecipes();
+
+        (async () => {
+            const { average, recipesRates, ratedLen: len } = await getRecipeRating();
+
+            setRatedLen(len);
+            setAverageRating(average);
+            setRated(recipesRates);
+        })();
     }, []);
 
     //Modifier la recette
@@ -208,11 +219,11 @@ function App() {
                         margin: 10,
                     }}
                 />
-                <label>{recipes.length} recettes</label>
+                <label>Note moyenne {averageRating} ({ratedLen} / {recipes.length} recettes notées)</label>
                 <div style={{ overflowY: "scroll", width: "100%", padding: 0 }}>
                     {recipes
                         .filter((item) => {
-                            if (searchTerm == "") {
+                            if (searchTerm === "") {
                                 return item;
                             } else if (
                                 item?.name
@@ -224,10 +235,12 @@ function App() {
                         })
                         .reverse()
                         .map((item) => {
+                            const recipeRate = rated[item._id];
                             return (
                                 <LeftComponent
                                     key={item.name}
                                     recipe={item}
+                                    rate={recipeRate || NaN}
                                     setRecipes={setRecipes}
                                     setForm={setForm}
                                     setModifying={setModifying}
