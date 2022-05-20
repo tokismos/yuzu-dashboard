@@ -4,7 +4,7 @@ import "./App.css";
 import Login from "./screen/Login/Login";
 
 import useToken from './hooks/useToken';
-import { db } from "./axios";
+import {db, generateThumbnail} from "./axios";
 import { addImage, getRecipeRating } from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
@@ -39,7 +39,9 @@ function App() {
         getAllRecipes();
 
         (async () => {
-            const { average, recipesRates, ratedLen: len } = await getRecipeRating();
+            const { average, recipesRates, ratedLen: len } = await getRecipeRating() || {};
+
+            if (!average || !recipesRates || !len) return;
 
             setRatedLen(len);
             setAverageRating(average);

@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref as dbRef, get, child } from 'firebase/database';
 import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
+import { generateThumbnail } from "./axios";
+
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDp2NnsdP0i01XwJMmSynmmSrC_R23MUiQ",
@@ -13,7 +15,6 @@ const firebaseConfig = {
   appId: "1:246034960415:web:c4aa304ce2a2bc379bc52a",
   measurementId: "G-N0G4M012VE",
 };
-console.log("firevbase initialid");
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 let downloadUrlImage;
@@ -74,14 +75,15 @@ const addImage = async (name, imageURL, videoURL) => {
     }
   });
 
-  const uploadImgPromise = new Promise((resolve, reject) => {
+  const uploadImgPromise = new Promise(async (resolve, reject) => {
     if (imageURL) {
       const imagesRef = ref(storage, `recettes/${name}`);
+      await generateThumbnail('https://firebasestorage.googleapis.com/v0/b/yuzu-5720e.appspot.com/o/recettes%2FDahl%20de%20lentilles%20corail%20aux%20aubergines%20?alt=media&token=3e903529-6d1c-4fbd-a6ad-5252e751e6b3', name);
 
       uploadBytes(imagesRef, imageURL).then((snapshot) => {
         console.log("Uploaded a blob or file!", snapshot);
         getDownloadURL(imagesRef)
-          .then((downloadURL) => {
+          .then(async (downloadURL) => {
             console.log("download", downloadURL);
             downloadUrlImage = downloadURL;
             resolve(downloadURL);
@@ -92,13 +94,10 @@ const addImage = async (name, imageURL, videoURL) => {
       resolve();
     }
   });
+
+
   return new Promise(function (resolve, reject) {
-    // let uploadVideoPromise = resolve();
-
-    // console.log("kayn", videoURL);
-
     Promise.all([uploadImgPromise, uploadVideoPromise]).then((values) => {
-      console.log("chbk", values);
       resolve(values);
     });
     console.log("imageURL0", downloadUrlImage);
