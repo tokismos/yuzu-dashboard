@@ -1,7 +1,9 @@
 import axios from "axios";
 
+require('dotenv').config();
+
 const db = axios.create({
-  baseURL: "https://backend-yuzi.herokuapp.com/recipes",
+  baseURL: `${process.env.REACT_APP_API_URL}/recipes`
 });
 
 export { db };
