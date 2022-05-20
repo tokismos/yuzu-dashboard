@@ -186,6 +186,7 @@ function App() {
 
     useEffect(() => {console.log('salut')}, [token])
 
+    console.log({isValid: isValidToken()})
     if (!isValidToken()) return <Login setToken={setToken} />
     return (
         <div
