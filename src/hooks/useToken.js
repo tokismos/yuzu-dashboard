@@ -12,7 +12,7 @@ const useToken = () => {
         setToken(useToken.token);
     }
 
-    const isValidToken = async () => !!(token && token === process.env.REACT_APP_AUTHORIZED_USER)
+    const isValidToken = () => !!(token && token === process.env.REACT_APP_AUTHORIZED_USER)
 
     return {
         setToken: saveToken,
