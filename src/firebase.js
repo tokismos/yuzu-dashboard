@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref as dbRef, get, child } from 'firebase/database';
-import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { getStorage, ref, listAll, getDownloadURL, uploadBytes } from "firebase/storage";
+import Resizer from 'react-image-file-resizer';
 
 import { generateThumbnail } from "./axios";
 
@@ -75,10 +76,41 @@ const addImage = async (name, imageURL, videoURL) => {
     }
   });
 
+  const dataURLtoFile =(dataurl, filename) => {
+
+    const arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]);
+    let n = bstr.length,
+        u8arr = new Uint8Array(n);
+
+    while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, {type:mime});
+  }
+
+  const resizeImage = (img) => new Promise((resolve) => {
+    Resizer.imageFileResizer(
+        img,
+        512,
+        512,
+        "jpeg",
+        100,
+        0,
+        (uri) => resolve(uri),
+        "base64"
+    )
+  })
+
   const uploadImgPromise = new Promise(async (resolve, reject) => {
     if (imageURL) {
       const imagesRef = ref(storage, `recettes/${name}`);
-      await generateThumbnail('https://firebasestorage.googleapis.com/v0/b/yuzu-5720e.appspot.com/o/recettes%2FDahl%20de%20lentilles%20corail%20aux%20aubergines%20?alt=media&token=3e903529-6d1c-4fbd-a6ad-5252e751e6b3', name);
+
+      const thumbData = await resizeImage(imageURL);
+      const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
+      const thumbRef = ref(storage, `recettes/${name}_thumb`);
 
       uploadBytes(imagesRef, imageURL).then((snapshot) => {
         console.log("Uploaded a blob or file!", snapshot);
@@ -86,7 +118,15 @@ const addImage = async (name, imageURL, videoURL) => {
           .then(async (downloadURL) => {
             console.log("download", downloadURL);
             downloadUrlImage = downloadURL;
-            resolve(downloadURL);
+
+            uploadBytes(thumbRef, thumb)
+                .then(snapshot => {
+                  getDownloadURL(thumbRef)
+                      .then(async (thumbDownloadURL) => {
+                        resolve({ downloadURL, thumbDownloadURL });
+
+                      })
+                })
           })
           .catch((e) => reject("ER"));
       });
