@@ -91,11 +91,11 @@ const addImage = async (name, imageURL, videoURL) => {
     return new File([u8arr], filename, {type:mime});
   }
 
-  const resizeImage = (img) => new Promise((resolve) => {
+  const resizeImage = (img, max) => new Promise((resolve) => {
     Resizer.imageFileResizer(
         img,
-        512,
-        512,
+        max,
+        max,
         "jpeg",
         100,
         0,
@@ -105,14 +105,19 @@ const addImage = async (name, imageURL, videoURL) => {
   })
 
   const uploadImgPromise = new Promise(async (resolve, reject) => {
+    const THUMB_MAX = 512;
+    const ORIG_MAX = 1980;
+
     if (imageURL) {
+      const imageData = await resizeImage(imageURL, ORIG_MAX);
+      const image = dataURLtoFile(imageData, name);
       const imagesRef = ref(storage, `recettes/${name}`);
 
-      const thumbData = await resizeImage(imageURL);
+      const thumbData = await resizeImage(imageURL, THUMB_MAX);
       const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
       const thumbRef = ref(storage, `recettes/${name}_thumb`);
 
-      uploadBytes(imagesRef, imageURL).then((snapshot) => {
+      uploadBytes(imagesRef, image).then((snapshot) => {
         console.log("Uploaded a blob or file!", snapshot);
         getDownloadURL(imagesRef)
           .then(async (downloadURL) => {
@@ -140,7 +145,6 @@ const addImage = async (name, imageURL, videoURL) => {
     Promise.all([uploadImgPromise, uploadVideoPromise]).then((values) => {
       resolve(values);
     });
-    console.log("imageURL0", downloadUrlImage);
   });
 };
 
