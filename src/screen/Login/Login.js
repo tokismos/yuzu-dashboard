@@ -37,7 +37,7 @@ const Login = ({ setToken }) => {
     return (
         <div className="login-wrapper">
             <h1>Please Log In</h1>
-            <button onClick={handleGoogleSubmit }>Google Submit</button>
+            <button onClick={handleGoogleSubmit}>Google Submit</button>
         </div>
     )
 }

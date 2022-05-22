@@ -3,7 +3,11 @@ import { useState } from 'react';
 require('dotenv').config();
 
 const useToken = () => {
-    const getToken = () => sessionStorage.getItem('token');
+    const getToken = () =>{
+        const token = sessionStorage.getItem('token');
+        console.log({ token });
+        return token
+    }
 
     const [token, setToken] = useState(getToken());
 
@@ -12,7 +16,7 @@ const useToken = () => {
         setToken(useToken.token);
     }
 
-    const isValidToken = () => !!(token && token === process.env.REACT_APP_AUTHORIZED_USER)
+    const isValidToken = () => !!(token && (token === process.env.REACT_APP_AUTHORIZED_USER || token === process.env.REACT_APP_AUTHORIZED_USER2))
 
     return {
         setToken: saveToken,

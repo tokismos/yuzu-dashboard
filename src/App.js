@@ -4,7 +4,7 @@ import "./App.css";
 import Login from "./screen/Login/Login";
 
 import useToken from './hooks/useToken';
-import { db } from "./axios";
+import {db, generateThumbnail} from "./axios";
 import { addImage, getRecipeRating } from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
@@ -39,7 +39,9 @@ function App() {
         getAllRecipes();
 
         (async () => {
-            const { average, recipesRates, ratedLen: len } = await getRecipeRating();
+            const { average, recipesRates, ratedLen: len } = await getRecipeRating() || {};
+
+            if (!average || !recipesRates || !len) return;
 
             setRatedLen(len);
             setAverageRating(average);
@@ -70,7 +72,8 @@ function App() {
             await addImage(form.name, tmp.imgURL, tmp.videoURL)
                 .then(async (url) => {
                     console.log("ARoy", JSON.stringify(url));
-                    tmp.imgURL = url[0];
+                    tmp.imgURL = url[0]?.downloadURL;
+                    tmp.thumbURL = url[0]?.thumbDownloadURL;
                     // tmp.videoURL = url[1];
                 })
                 .catch((e) => {
@@ -153,7 +156,8 @@ function App() {
         addImage(form.name, tmp.imgURL, tmp.videoURL)
             .then(async (url) => {
                 console.log("ohio", url);
-                tmp.imgURL = url[0];
+                tmp.imgURL = url[0]?.downloadURL;
+                tmp.thumbURL = url[0]?.thumbDownloadURL;
                 if (url[1]) {
                     tmp.videoURL = url[1];
                 }

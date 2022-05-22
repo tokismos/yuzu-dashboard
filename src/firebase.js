@@ -1,6 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref as dbRef, get, child } from 'firebase/database';
-import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { getStorage, ref, listAll, getDownloadURL, uploadBytes } from "firebase/storage";
+import Resizer from 'react-image-file-resizer';
+
+import { generateThumbnail } from "./axios";
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -13,7 +16,6 @@ const firebaseConfig = {
   appId: "1:246034960415:web:c4aa304ce2a2bc379bc52a",
   measurementId: "G-N0G4M012VE",
 };
-console.log("firevbase initialid");
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 let downloadUrlImage;
@@ -74,17 +76,62 @@ const addImage = async (name, imageURL, videoURL) => {
     }
   });
 
-  const uploadImgPromise = new Promise((resolve, reject) => {
+  const dataURLtoFile =(dataurl, filename) => {
+
+    const arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]);
+    let n = bstr.length,
+        u8arr = new Uint8Array(n);
+
+    while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, {type:mime});
+  }
+
+  const resizeImage = (img, max) => new Promise((resolve) => {
+    Resizer.imageFileResizer(
+        img,
+        max,
+        max,
+        "jpeg",
+        100,
+        0,
+        (uri) => resolve(uri),
+        "base64"
+    )
+  })
+
+  const uploadImgPromise = new Promise(async (resolve, reject) => {
+    const THUMB_MAX = 512;
+    const ORIG_MAX = 1980;
+
     if (imageURL) {
+      const imageData = await resizeImage(imageURL, ORIG_MAX);
+      const image = dataURLtoFile(imageData, name);
       const imagesRef = ref(storage, `recettes/${name}`);
 
-      uploadBytes(imagesRef, imageURL).then((snapshot) => {
+      const thumbData = await resizeImage(imageURL, THUMB_MAX);
+      const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
+      const thumbRef = ref(storage, `recettes/${name}_thumb`);
+
+      uploadBytes(imagesRef, image).then((snapshot) => {
         console.log("Uploaded a blob or file!", snapshot);
         getDownloadURL(imagesRef)
-          .then((downloadURL) => {
+          .then(async (downloadURL) => {
             console.log("download", downloadURL);
             downloadUrlImage = downloadURL;
-            resolve(downloadURL);
+
+            uploadBytes(thumbRef, thumb)
+                .then(snapshot => {
+                  getDownloadURL(thumbRef)
+                      .then(async (thumbDownloadURL) => {
+                        resolve({ downloadURL, thumbDownloadURL });
+
+                      })
+                })
           })
           .catch((e) => reject("ER"));
       });
@@ -92,16 +139,12 @@ const addImage = async (name, imageURL, videoURL) => {
       resolve();
     }
   });
+
+
   return new Promise(function (resolve, reject) {
-    // let uploadVideoPromise = resolve();
-
-    // console.log("kayn", videoURL);
-
     Promise.all([uploadImgPromise, uploadVideoPromise]).then((values) => {
-      console.log("chbk", values);
       resolve(values);
     });
-    console.log("imageURL0", downloadUrlImage);
   });
 };
 
