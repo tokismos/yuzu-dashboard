@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 import { db } from "../axios";
+import {createThumbnail} from "../firebase";
 
 export default function LeftComponent({
   recipe,
@@ -9,8 +10,20 @@ export default function LeftComponent({
   setRecipes,
   setDisabled,
   setMsg,
-    rate
+    rate,
+    name
 }) {
+  useEffect(() => {
+    (async () => {
+      try {
+        if (recipe?.imgURL) {
+          await createThumbnail(recipe?.imgURL, recipe?.name, recipe)
+        } else {}
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+  }, [])
   const modify = () => {
     setDisabled(false);
     setModifying(true);

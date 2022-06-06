@@ -107,8 +107,6 @@ const addImage = async (name, imageURL, videoURL) => {
     }
   });
 
-
-
   const uploadImgPromise = new Promise(async (resolve, reject) => {
     if (imageURL) {
       const imageData = await resizeImage(imageURL, ORIG_MAX);
@@ -152,28 +150,22 @@ const addImage = async (name, imageURL, videoURL) => {
 
 const createThumbnail = async (imageURL, name, item) => {
   try {
-    if (!imageURL) return;
-    // const response = await fetch(imageURL).then(r => r.blob()).catch(console.error)
-    // const file = new File([response], `myImage-${new Date()}.png`, {type: "image/png"})
-    // const thumbData = await resizeImage(file, THUMB_MAX)
-    // if (!thumbData) return
-    //
-    //
-    // const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
-    // console.log({ name, thumb })
-    // const thumbRef = ref(storage, `recettes/${name}_thumb`);
+    if (!imageURL || item.thumbURL) return;
+    const response = await fetch(imageURL).then(r => r.blob()).catch(console.error)
+    const file = new File([response], `myImage-${new Date()}.png`, {type: "image/png"})
+    const thumbData = await resizeImage(file, THUMB_MAX)
+    if (!thumbData) return
 
-    // uploadBytes(thumbRef, thumb)
-    //     .then(snapshot => {
-    //       getDownloadURL(thumbRef)
-    //           .then(async (thumbDownloadURL) => {
-    //             await pushThumbnail(thumbDownloadURL, name, item)
-    await pushThumbnail("https://firebasestorage.googleapis.com/v0/b/yuzu-5720e.appspot.com/o/recettes%2FCarpaccio%20de%20champignons%20et%20radis%20daikon%20avec%20sa%20vinaigrette%20asiatique%20?alt=media&token=8229b080-e917-4fbd-83cd-face32ad9af3", name, item)
-    //       })
-        // })
+    const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
+    const thumbRef = ref(storage, `recettes/${name}_thumb`);
 
-    // const thumbData = await resizeImage(response.data, THUMB_MAX);
-    // console.log({ thumbData });
+    uploadBytes(thumbRef, thumb)
+        .then(snapshot => {
+          getDownloadURL(thumbRef)
+              .then(async (thumbDownloadURL) => {
+                await pushThumbnail(thumbDownloadURL, name, item)
+          })
+        })
   } catch (e) {
     console.error(e);
   }

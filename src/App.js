@@ -5,7 +5,7 @@ import Login from "./screen/Login/Login";
 
 import useToken from './hooks/useToken';
 import {db, generateThumbnail} from "./axios";
-import { addImage, getRecipeRating } from "./firebase";
+import {addImage, createThumbnail, getRecipeRating} from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
@@ -35,10 +35,10 @@ function App() {
         setRecipes(result.data);
     };
 
-    useEffect(() => {
-        getAllRecipes();
 
+    useEffect(() => {
         (async () => {
+            await getAllRecipes();
             const { average, recipesRates, ratedLen: len } = await getRecipeRating() || {};
 
             if (!average || !recipesRates || !len) return;
