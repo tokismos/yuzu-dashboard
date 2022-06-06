@@ -2,8 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref as dbRef, get, child } from 'firebase/database';
 import { getStorage, ref, listAll, getDownloadURL, uploadBytes } from "firebase/storage";
 import Resizer from 'react-image-file-resizer';
-
-import { generateThumbnail } from "./axios";
+import { pushThumbnail } from './axios';
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -20,6 +19,22 @@ const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 let downloadUrlImage;
 let downloadUrlVideo;
+
+const THUMB_MAX = 216;
+const ORIG_MAX = 1980;
+
+const resizeImage = (img, max) => new Promise(resolve => {
+  Resizer.imageFileResizer(
+      img,
+      max,
+      max,
+      "jpeg",
+      100,
+      0,
+      (uri) => resolve(uri),
+      "base64"
+  )
+});
 
 const getRecipeRating = async () => {
   try {
@@ -56,6 +71,22 @@ const getRecipeRating = async () => {
   }
 }
 
+const dataURLtoFile = (dataurl, filename) => {
+
+  const arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]);
+  let n = bstr.length,
+      u8arr = new Uint8Array(n);
+
+  while(n--){
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  return new File([u8arr], filename, {type:mime});
+}
+
+
 const addImage = async (name, imageURL, videoURL) => {
   const uploadVideoPromise = new Promise((resolve, reject) => {
     if (videoURL) {
@@ -76,38 +107,9 @@ const addImage = async (name, imageURL, videoURL) => {
     }
   });
 
-  const dataURLtoFile =(dataurl, filename) => {
 
-    const arr = dataurl.split(','),
-        mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]);
-    let n = bstr.length,
-        u8arr = new Uint8Array(n);
-
-    while(n--){
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    return new File([u8arr], filename, {type:mime});
-  }
-
-  const resizeImage = (img, max) => new Promise((resolve) => {
-    Resizer.imageFileResizer(
-        img,
-        max,
-        max,
-        "jpeg",
-        100,
-        0,
-        (uri) => resolve(uri),
-        "base64"
-    )
-  })
 
   const uploadImgPromise = new Promise(async (resolve, reject) => {
-    const THUMB_MAX = 512;
-    const ORIG_MAX = 1980;
-
     if (imageURL) {
       const imageData = await resizeImage(imageURL, ORIG_MAX);
       const image = dataURLtoFile(imageData, name);
@@ -148,4 +150,34 @@ const addImage = async (name, imageURL, videoURL) => {
   });
 };
 
-export { addImage, getRecipeRating };
+const createThumbnail = async (imageURL, name, item) => {
+  try {
+    if (!imageURL) return;
+    // const response = await fetch(imageURL).then(r => r.blob()).catch(console.error)
+    // const file = new File([response], `myImage-${new Date()}.png`, {type: "image/png"})
+    // const thumbData = await resizeImage(file, THUMB_MAX)
+    // if (!thumbData) return
+    //
+    //
+    // const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
+    // console.log({ name, thumb })
+    // const thumbRef = ref(storage, `recettes/${name}_thumb`);
+
+    // uploadBytes(thumbRef, thumb)
+    //     .then(snapshot => {
+    //       getDownloadURL(thumbRef)
+    //           .then(async (thumbDownloadURL) => {
+    //             await pushThumbnail(thumbDownloadURL, name, item)
+    await pushThumbnail("https://firebasestorage.googleapis.com/v0/b/yuzu-5720e.appspot.com/o/recettes%2FCarpaccio%20de%20champignons%20et%20radis%20daikon%20avec%20sa%20vinaigrette%20asiatique%20?alt=media&token=8229b080-e917-4fbd-83cd-face32ad9af3", name, item)
+    //       })
+        // })
+
+    // const thumbData = await resizeImage(response.data, THUMB_MAX);
+    // console.log({ thumbData });
+  } catch (e) {
+    console.error(e);
+  }
+
+}
+
+export { addImage, createThumbnail, getRecipeRating };
