@@ -18,8 +18,9 @@ const Login = ({ setToken }) => {
             const user = result.user;
 
             const authorizedUser = process.env.REACT_APP_AUTHORIZED_USER;
+            const authorizedUser2 = process.env.REACT_APP_AUTHORIZED_USER2;
 
-            if (user.uid === authorizedUser) {
+            if (user.uid === authorizedUser || user.uid === authorizedUser2) {
                 setToken(user.uid);
                 window.location.reload();
             }

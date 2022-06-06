@@ -5,7 +5,7 @@ import Login from "./screen/Login/Login";
 
 import useToken from './hooks/useToken';
 import {db, generateThumbnail} from "./axios";
-import { addImage, getRecipeRating } from "./firebase";
+import {addImage, createThumbnail, getRecipeRating} from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
@@ -35,10 +35,10 @@ function App() {
         setRecipes(result.data);
     };
 
-    useEffect(() => {
-        getAllRecipes();
 
+    useEffect(() => {
         (async () => {
+            await getAllRecipes();
             const { average, recipesRates, ratedLen: len } = await getRecipeRating() || {};
 
             if (!average || !recipesRates || !len) return;
@@ -81,13 +81,9 @@ function App() {
                 });
         }
         if (typeof form.videoURL === "object") {
-            console.log("WALO");
             await addImage(form.name, false, tmp.videoURL)
                 .then(async (url) => {
-                    console.log("ARoy", JSON.stringify(url));
-                    // tmp.imgURL = url[0];
                     tmp.videoURL = url[1];
-                    console.log("jwan", url[1]);
                 })
                 .catch((e) => {
                     setMsg("THERE IS AN ERROR", e);
@@ -95,8 +91,6 @@ function App() {
         }
         //2 means we are modifying the scrapped db
         if (modifying == 2) {
-            console.log("deleteeed from 222", form._id);
-
             try {
                 await db.post(`/add`, tmp);
                 await db.delete(`/${form._id}`);
@@ -105,12 +99,10 @@ function App() {
             } catch (e) {
                 setLoading(false);
                 setDisabled(false);
-                console.log("eeeeeeeeeeeeea", e.response.data.error.message);
                 setMsg("Error: ");
                 alert(e.response.data.error.message);
             }
         } else {
-            console.log("this iiiiiiiis tm,p0", tmp);
             try {
                 await db.patch("/modify", tmp);
                 setMsg("UPLOAD SUCCESSFUL");
