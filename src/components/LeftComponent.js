@@ -16,7 +16,7 @@ export default function LeftComponent({
   useEffect(() => {
     (async () => {
       try {
-        if (recipe?.imgURL) {
+        if (recipe?.imgURL && !recipe?.thumbURL) {
           await createThumbnail(recipe?.imgURL, recipe?.name, recipe)
         } else {}
       } catch (e) {
