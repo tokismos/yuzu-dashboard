@@ -13,8 +13,7 @@ const generateThumbnail = async (imageURL, name) => {
       .catch(console.error);
 }
 
-const pushThumbnail = async (thumbURL, name, item) => {
-  console.log('Pushing ', name)
-  await db.post('/thumb', { thumbURL, name, item }).then(console.log)
+const pushThumbnail = async (thumbURL, item) => {
+  await db.post('/thumb', { thumbURL, item }).then(console.log)
 }
 export { db, generateThumbnail, pushThumbnail };

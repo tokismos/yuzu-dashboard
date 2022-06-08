@@ -154,18 +154,24 @@ const createThumbnail = async (imageURL, name, item) => {
     const response = await fetch(imageURL).then(r => r.blob()).catch(console.error)
     const file = new File([response], `myImage-${new Date()}.png`, {type: "image/png"})
     const thumbData = await resizeImage(file, THUMB_MAX)
-    if (!thumbData) return
+    const origData = await resizeImage(file, ORIG_MAX)
+
+    if (!thumbData || !origData) {
+      return
+    }
+
+    const orig = dataURLtoFile(origData, name);
+    const origRef = ref(storage, `recettes/${name}`);
 
     const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
     const thumbRef = ref(storage, `recettes/${name}_thumb`);
 
-    uploadBytes(thumbRef, thumb)
-        .then(snapshot => {
-          getDownloadURL(thumbRef)
-              .then(async (thumbDownloadURL) => {
-                await pushThumbnail(thumbDownloadURL, name, item)
-          })
-        })
+    await uploadBytes(origRef, orig)
+    await uploadBytes(thumbRef, thumb)
+
+    const thumbDownloadURL = await getDownloadURL(thumbRef);
+
+    await pushThumbnail(thumbDownloadURL, item)
   } catch (e) {
     console.error(e);
   }
