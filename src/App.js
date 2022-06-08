@@ -4,8 +4,8 @@ import "./App.css";
 import Login from "./screen/Login/Login";
 
 import useToken from './hooks/useToken';
-import {db, generateThumbnail} from "./axios";
-import {addImage, createThumbnail, getRecipeRating} from "./firebase";
+import {db} from "./axios";
+import {addImage, getRecipeRating} from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
