@@ -182,7 +182,7 @@ export default function LeftComponent({
         style={{
           display: "flex",
           flexDirection: "column",
-          height: "50px",
+          height: "100px",
           justifyContent: "space-between",
         }}
       >
