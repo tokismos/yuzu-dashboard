@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import DropZone from "./DropZone";
 import { MultiSelect } from "react-multi-select-component";
 
 export default function MiddleComponent({ form, setForm }) {
   const customValueRenderer = (selected, _options) => {
     return selected.length
-      ? selected.map(({ label }) => "✔️ " + label)
+      ? selected.map(({ label }) => {
+        console.log({ label })
+        return "✔️ " + label
+      })
       : "😶 No Items Selected";
   };
 
@@ -18,13 +21,13 @@ export default function MiddleComponent({ form, setForm }) {
   ];
 
   const optionCategory = [
-      { label: "Petit dej & brunch", value: "breakfast" },
-      { label: "Apéritif", value: "aperitif" },
-      { label: "Entrées", value: "starters" },
-      { label: "Plats principaux", value: "main" },
-      { label: "Dessert", value: "dessert" },
-      { label: "Boisson & Cocktail", value: "drinks" },
-      { label: "Snacks", value: "snacks" },
+    { label: "Petit dej & brunch", value: "breakfast" },
+    { label: "Apéritif", value: "aperitif" },
+    { label: "Entrées", value: "starters" },
+    { label: "Plats principaux", value: "main" },
+    { label: "Dessert", value: "dessert" },
+    { label: "Boisson & Cocktail", value: "drinks" },
+    { label: "Snacks", value: "snacks" },
   ]
 
   const optionsMateriel = [
@@ -74,7 +77,7 @@ export default function MiddleComponent({ form, setForm }) {
               height: "50px",
               fontSize: 20,
             }}
-            value={form.name}
+            value={form?.name || ''}
             type="text"
             placeholder="Nom de la recette"
             onChange={(e) => {
@@ -89,7 +92,7 @@ export default function MiddleComponent({ form, setForm }) {
               height: "50px",
               fontSize: 20,
             }}
-            value={form.chefName}
+            value={form?.chefName || ''}
             type="text"
             placeholder="Nom du chef"
             onChange={(e) => {
@@ -112,8 +115,8 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="Nbr. Personne"
-            defaultValue={form.nbrPersonne}
-            value={form.nbrPersonne}
+            defaultValue={form?.nbrPersonne || 0}
+            value={form?.nbrPersonne || 0}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.nbrPersonne = e.target.value;
@@ -124,8 +127,8 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Preparation"
-            value={form?.tempsPreparation}
-            defaultValue={form?.tempsPreparation}
+            value={form?.tempsPreparation || 0}
+            defaultValue={form?.tempsPreparation || 0}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsPreparation = e.target.value;
@@ -136,8 +139,8 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Cuisson"
-            defaultValue={form?.tempsCuisson}
-            value={form?.tempsCuisson}
+            defaultValue={form?.tempsCuisson || 0}
+            value={form?.tempsCuisson || 0}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsCuisson = e.target.value;
@@ -149,8 +152,8 @@ export default function MiddleComponent({ form, setForm }) {
             style={{ fontSize: 20, display: "flex", width: "23%" }}
             type="text"
             placeholder="T. Attente"
-            value={form?.tempsAttente}
-            defaultValue={form?.tempsAttente}
+            value={form?.tempsAttente || 0}
+            defaultValue={form?.tempsAttente || 0}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.tempsAttente = e.target.value;
@@ -170,7 +173,7 @@ export default function MiddleComponent({ form, setForm }) {
             <label style={{ marginRight: 20 }}>Difficulté :</label>
             <select
               style={{ flex: 1, fontSize: 20 }}
-              value={form.difficulty}
+              value={form?.difficulty || 'Facile'}
               onChange={(e) => {
                 const tmp = { ...form };
                 tmp.difficulty = e.target.value;
@@ -188,32 +191,28 @@ export default function MiddleComponent({ form, setForm }) {
               className="multiInput"
               options={optionsRegime}
               labelledBy="Select"
-              value={form?.regime}
-              onChange={(item) => {
-                setForm({ ...form, regime: item });
-              }}
+              value={form?.regime || []}
+              onChange={(item) => setForm({ ...form, regime: item })}
               hasSelectAll={false}
-              shouldToggleOnHover
               valueRenderer={customValueRenderer}
               disableSearch
             />
           </div>
-            <div style={{ display: "flex", marginTop: "20px", width: "100%" }}>
-                <label style={{ marginRight: 20 }}>Catégories:</label>
-                <MultiSelect
-                    className="multiInput"
-                    options={optionCategory}
-                    labelledBy="Select"
-                    value={form?.category}
-                    onChange={item => {
-                        setForm({ ...form, category: item })
-                    }}
-                    hasSelectAll={false}
-                    shouldToggleOnHover
-                    valueRenderer={customValueRenderer}
-                    disableSearch
-                />
-            </div>
+          <div style={{ display: "flex", marginTop: "20px", width: "100%" }}>
+            <label style={{ marginRight: 20 }}>Catégories:</label>
+            <MultiSelect
+              className="multiInput"
+              options={optionCategory}
+              labelledBy="Select"
+              value={form?.category || []}
+              onChange={item => {
+                setForm({ ...form, category: item })
+              }}
+              hasSelectAll={false}
+              valueRenderer={customValueRenderer}
+              disableSearch
+            />
+          </div>
           <div
             style={{ display: "flex", flexDirection: "row", marginTop: "20px" }}
           >
@@ -222,12 +221,11 @@ export default function MiddleComponent({ form, setForm }) {
               className="multiInput"
               options={optionsMateriel}
               labelledBy="Select"
-              value={form?.material}
+              value={form?.material || []}
               onChange={(item) => {
                 setForm({ ...form, material: item });
               }}
               hasSelectAll={false}
-              shouldToggleOnHover
               valueRenderer={customValueRenderer}
               disableSearch
             />
@@ -242,7 +240,7 @@ export default function MiddleComponent({ form, setForm }) {
               padding: 20,
               alignSelf: "center",
             }}
-            value={form.steps}
+            value={form?.steps || ''}
             onChange={(e) => {
               const tmp = { ...form };
               tmp.steps = e.target.value;
