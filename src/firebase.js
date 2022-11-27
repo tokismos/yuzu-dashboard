@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref as dbRef, get, child } from 'firebase/database';
-import { getStorage, ref, listAll, getDownloadURL, uploadBytes } from "firebase/storage";
+import { getStorage, ref, listAll, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
 import Resizer from 'react-image-file-resizer';
-import { pushThumbnail } from './axios';
+import { pushThumbnail, editImg, getAllRecipes } from './axios';
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -21,18 +21,18 @@ let downloadUrlImage;
 let downloadUrlVideo;
 
 const THUMB_MAX = 216;
-const ORIG_MAX = 1980;
+const ORIG_MAX = 1000;
 
 const resizeImage = (img, max) => new Promise(resolve => {
   Resizer.imageFileResizer(
-      img,
-      max,
-      max,
-      "jpeg",
-      100,
-      0,
-      (uri) => resolve(uri),
-      "base64"
+    img,
+    max,
+    max,
+    "jpeg",
+    92,
+    0,
+    (uri) => resolve(uri),
+    "base64"
   )
 });
 
@@ -64,7 +64,7 @@ const getRecipeRating = async () => {
       const ratedLen = Object.keys(recipesRates).length;
       const average = Object.values(recipesRates).reduce((sum, val) => sum + val, 0) / ratedLen;
 
-      return { average, recipesRates, ratedLen  };
+      return { average, recipesRates, ratedLen };
     }
   } catch (e) {
     console.error(e)
@@ -74,17 +74,19 @@ const getRecipeRating = async () => {
 const dataURLtoFile = (dataurl, filename) => {
 
   const arr = dataurl.split(','),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]);
+    mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[1]);
   let n = bstr.length,
-      u8arr = new Uint8Array(n);
+    u8arr = new Uint8Array(n);
 
-  while(n--){
+  while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }
 
-  return new File([u8arr], filename, {type:mime});
+  return new File([u8arr], filename, { type: mime });
 }
+
+
 
 
 const addImage = async (name, imageURL, videoURL) => {
@@ -107,6 +109,10 @@ const addImage = async (name, imageURL, videoURL) => {
     }
   });
 
+
+  // Find all the prefixes and items.
+
+
   const uploadImgPromise = new Promise(async (resolve, reject) => {
     if (imageURL) {
       const imageData = await resizeImage(imageURL, ORIG_MAX);
@@ -125,13 +131,13 @@ const addImage = async (name, imageURL, videoURL) => {
             downloadUrlImage = downloadURL;
 
             uploadBytes(thumbRef, thumb)
-                .then(snapshot => {
-                  getDownloadURL(thumbRef)
-                      .then(async (thumbDownloadURL) => {
-                        resolve({ downloadURL, thumbDownloadURL });
+              .then(snapshot => {
+                getDownloadURL(thumbRef)
+                  .then(async (thumbDownloadURL) => {
+                    resolve({ downloadURL, thumbDownloadURL });
 
-                      })
-                })
+                  })
+              })
           })
           .catch((e) => reject("ER"));
       });
@@ -152,7 +158,8 @@ const createThumbnail = async (imageURL, name, item) => {
   try {
     if (!imageURL || item.thumbURL) return;
     const response = await fetch(imageURL).then(r => r.blob()).catch(console.error)
-    const file = new File([response], `myImage-${new Date()}.png`, {type: "image/png"})
+
+    const file = new File([response], `myImage-${new Date()}.png`, { type: "image/png" })
     const thumbData = await resizeImage(file, THUMB_MAX)
     const origData = await resizeImage(file, ORIG_MAX)
 
@@ -178,4 +185,82 @@ const createThumbnail = async (imageURL, name, item) => {
 
 }
 
-export { addImage, createThumbnail, getRecipeRating };
+
+
+// ATTENTION, getAllStorage compresse toutes les images des recettes
+// actualise leur ref dans la DB
+
+// const listRef = ref(storage, 'recettes/');
+
+// const getAllStorage = () => {
+//   listAll(listRef)
+//     .then(async (res) => {
+
+//       const allRecipes = (await getAllRecipes()).data
+
+//       var i = 0
+//       res.items.forEach(async (itemRef) => {
+       
+//         if (
+//           !itemRef.name.includes("thumb") &&
+//           !itemRef.name.includes("png")
+//           && !itemRef.name.includes(".mov")
+
+//         ) {
+//           console.log(itemRef)
+
+
+//           var oldUrl = await getDownloadURL(ref(storage, itemRef.fullPath))
+
+//           console.log(oldUrl)
+
+
+//           const response = await fetch(oldUrl).then(r => r.blob()).catch(console.error)
+//           const file = new File([response], `myImage-${new Date()}.png`, { type: "image/png" })
+
+//           const origData = await resizeImage(file, ORIG_MAX)
+
+
+//           await deleteObject(ref(storage, itemRef.fullPath)).then(() =>
+//             console.log("deleteOk"),
+//             () => console.log("deleteError")
+//           )
+
+
+
+//           const orig = dataURLtoFile(origData, itemRef.name);
+//           const origRef = ref(storage, `recettes/${itemRef.name}_compression`);
+//           await uploadBytes(origRef, orig)
+//           const newUrl = await getDownloadURL(ref(storage, origRef))
+//           console.log(newUrl)
+//           const indexToken = oldUrl.indexOf('?alt=')
+//           oldUrl = oldUrl.substring(indexToken, 0)
+//           console.log(oldUrl)
+//           var id = ""
+//           allRecipes.forEach(el=>{
+//             if(el.imgURL && el.imgURL.includes(oldUrl) &&
+//             !el.imgURL.includes("thumb") &&
+//             !el.imgURL.includes("png") && 
+//             !itemRef.name.includes(".mov")) id = el._id
+//           })
+//           if(id!="")
+//           {
+//             console.log(id)
+//             const result = await editImg(id, newUrl)
+//             console.log(result)
+//           }
+
+
+
+
+//         }
+
+//         i++
+//       });
+//       console.log(i)
+//     }).catch((error) => {
+//       // Uh-oh, an error occurred!
+//     });
+// }
+
+export { addImage, createThumbnail, getRecipeRating, getAllRecipes };

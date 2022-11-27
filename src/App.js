@@ -5,7 +5,7 @@ import Login from "./screen/Login/Login";
 
 import useToken from './hooks/useToken';
 import { db } from "./axios";
-import { addImage, getRecipeRating } from "./firebase";
+import { addImage, getRecipeRating, } from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
@@ -46,6 +46,7 @@ function App() {
       setRatedLen(len);
       setAverageRating(average);
       setRated(recipesRates);
+     
     })();
   }, []);
 
