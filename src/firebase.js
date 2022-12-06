@@ -178,7 +178,7 @@ const createThumbnail = async (imageURL, name, item) => {
 
     const thumbDownloadURL = await getDownloadURL(thumbRef);
 
-    await pushThumbnail(thumbDownloadURL, item)
+    await pushThumbnail(thumbDownloadURL, item,)
   } catch (e) {
     console.error(e);
   }

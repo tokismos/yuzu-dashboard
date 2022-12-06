@@ -1,5 +1,9 @@
 import axios from "axios";
 import FormData from 'form-data';
+import { getAuth } from 'firebase/auth';
+
+
+
 
 require('dotenv').config();
 
@@ -9,12 +13,16 @@ const db = axios.create({
 
 const generateThumbnail = async (imageURL, name) => {
   console.log({imageURL, name})
-  await db.post('/image', { imageURL, name }).then(console.log)
+  const auth = getAuth();
+  const user = auth.currentUser;
+  await db.post('/image', { imageURL, name,  authId:user.uid }).then(console.log)
       .catch(console.error)
 }
 
 const pushThumbnail = async (thumbURL, item) => {
-  await db.post('/thumb', { thumbURL, item }).then(console.log)
+  const auth = getAuth();
+  const user = auth.currentUser;
+  await db.post('/thumb', { thumbURL, item, authId:user.uid}).then(console.log)
 }
 
 const getAllRecipes = async () => {

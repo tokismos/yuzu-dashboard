@@ -1,7 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
 import { db } from "../axios";
-import {createThumbnail} from "../firebase";
+import { createThumbnail } from "../firebase";
+
+import { getAuth } from 'firebase/auth';
 
 export default function LeftComponent({
   recipe,
@@ -10,15 +12,20 @@ export default function LeftComponent({
   setRecipes,
   setDisabled,
   setMsg,
-    rate,
-    name
+  rate,
+  name
 }) {
+
+
+
+
+
   useEffect(() => {
     (async () => {
       try {
         if (recipe?.imgURL && !recipe?.thumbURL) {
           await createThumbnail(recipe?.imgURL, recipe?.name, recipe)
-        } else {}
+        } else { }
       } catch (e) {
         console.error(e)
       }
@@ -110,7 +117,9 @@ export default function LeftComponent({
 
   const toggleVisible = async (id, value) => {
     try {
-      await db.patch(`/toggleVisible/${id}/${value}`);
+      const auth = getAuth();
+      const user = auth.currentUser;
+      await db.patch(`/toggleVisible/${id}/${value}`, { authId: user.uid});
     } catch (e) {
       console.log("There is an error.", e);
     }
@@ -172,7 +181,7 @@ export default function LeftComponent({
             Liked by{" "}
             {parseInt(
               (recipe.stats.nbrRight * 100) /
-                (recipe.stats.nbrRight + recipe.stats.nbrLeft)
+              (recipe.stats.nbrRight + recipe.stats.nbrLeft)
             )}
             % {recipe.stats.nbrRight}
           </label>
@@ -196,7 +205,12 @@ export default function LeftComponent({
               window.confirm("Est tu sur de vouloir supprimer cette recette")
             ) {
               // Save it!
-              await db.delete(`/${recipe._id}`);
+              const auth = getAuth();
+              
+              const user = auth.currentUser;
+              console.log(user.uid)
+            const result = await db.delete(`/${recipe._id}`, {authId:user.uid});
+            console.log(result)
               setRecipes((p) => p.filter((i) => i._id != recipe._id));
               console.log("deleted");
             } else {

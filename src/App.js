@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 import Login from "./screen/Login/Login";
-
+import { getAuth } from 'firebase/auth';
 import useToken from './hooks/useToken';
 import { db } from "./axios";
 import { addImage, getRecipeRating, } from "./firebase";
@@ -30,6 +30,9 @@ function App() {
   const [modifying, setModifying] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const auth = getAuth();
+  const user = auth.currentUser;
+
   const getAllRecipes = async () => {
     const result = await db.get("/all");
     setRecipes(result.data);
@@ -46,7 +49,7 @@ function App() {
       setRatedLen(len);
       setAverageRating(average);
       setRated(recipesRates);
-     
+
     })();
   }, []);
 
@@ -91,10 +94,13 @@ function App() {
         });
     }
     //2 means we are modifying the scrapped db
+
+
     if (modifying == 2) {
       try {
-        await db.post(`/add`, tmp);
-        await db.delete(`/${form._id}`);
+
+        await db.post(`/add`, { ...tmp, authId: user.uid });
+        await db.delete(`/${form._id}`, { authId: user.uid });
         setLoading(false);
         setMsg("Modified successfuly");
       } catch (e) {
@@ -105,10 +111,14 @@ function App() {
       }
     } else {
       try {
-        await db.patch("/modify", tmp);
+        console.log(user.uid)
+        const result = await db.patch(`/modify/`, { ...tmp, authId: user.uid});
+        console.log(result)
         setMsg("UPLOAD SUCCESSFUL");
       } catch (e) {
-        alert(e.response.data.error.message);
+        console.log(user.uid)
+        console.log(e)
+        alert("Erreur");
       }
       setLoading(false);
       setDisabled(false);
@@ -161,8 +171,11 @@ function App() {
         tmp.tempsTotal =
           +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;
 
+
+        console.log(user.uid)
         try {
-          await db.post("/add", tmp);
+          const result = await db.post(`/add`, { ...tmp, authId: user.uid });
+          console.log(result)
           setLoading(false);
           setMsg("UPLOAD SUCCESSFUL,WAIT 5s !!!!");
           getAllRecipes();
@@ -176,6 +189,7 @@ function App() {
       })
       .catch((e) => {
         setMsg("THERE IS AN ERROR", e);
+        console.log(e)
         setLoading(false);
         setDisabled(false);
       });
