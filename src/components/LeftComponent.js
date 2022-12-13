@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useContext} from "react";
 
 import { db } from "../axios";
 import { createThumbnail } from "../firebase";
 
-import { getAuth } from 'firebase/auth';
+import {getAuthToken} from "../firebase"
+
+  
 
 export default function LeftComponent({
   recipe,
@@ -13,9 +15,9 @@ export default function LeftComponent({
   setDisabled,
   setMsg,
   rate,
-  name
+  name,
+  
 }) {
-
 
 
 
@@ -117,9 +119,8 @@ export default function LeftComponent({
 
   const toggleVisible = async (id, value) => {
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      await db.patch(`/toggleVisible/${id}/${value}`, { authId: user.uid});
+      const idToken = await getAuthToken()
+      await db.patch(`/toggleVisible/${id}/${value}/${idToken}`);
     } catch (e) {
       console.log("There is an error.", e);
     }
@@ -205,11 +206,9 @@ export default function LeftComponent({
               window.confirm("Est tu sur de vouloir supprimer cette recette")
             ) {
               // Save it!
-              const auth = getAuth();
-              
-              const user = auth.currentUser;
-              console.log(user.uid)
-            const result = await db.delete(`/${recipe._id}`, {authId:user.uid});
+             
+              const idToken = await getAuthToken()
+            const result = await db.delete(`/${recipe._id}/${idToken}`);
             console.log(result)
               setRecipes((p) => p.filter((i) => i._id != recipe._id));
               console.log("deleted");

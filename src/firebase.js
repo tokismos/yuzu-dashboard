@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref as dbRef, get, child } from 'firebase/database';
 import { getStorage, ref, listAll, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
+import { getAuth, getIdToken, } from "firebase/auth"
 import Resizer from 'react-image-file-resizer';
-import { pushThumbnail, editImg, getAllRecipes } from './axios';
+import { pushThumbnail, editImg, getRecipeRatings, uploadStorage } from './axios';
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -16,7 +17,8 @@ const firebaseConfig = {
   measurementId: "G-N0G4M012VE",
 };
 const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
+export const storage = getStorage(app);
+export const auth = getAuth(app)
 let downloadUrlImage;
 let downloadUrlVideo;
 
@@ -36,36 +38,48 @@ const resizeImage = (img, max) => new Promise(resolve => {
   )
 });
 
+const getAuthToken = () => getIdToken(auth.currentUser, true)
+  .then((idToken) => {
+
+    return idToken
+
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
 const getRecipeRating = async () => {
+
   try {
-    const refDatabase = dbRef(getDatabase())
-    const snapshot = await get(child(refDatabase, '/rate'))
 
-    if (snapshot.exists()) {
-      /**
-       * @name recipesRates
-       * @type {{ recipeID_1: number, recipeID_2: number, recipeID_n: number }}
-       *
-       * is an object with all recipes rate, order by recipes key
-       *
-       * {
-       *     recipe_1: 3,
-       *     recipe_2: 4
-       * }
-       */
-      const recipesRates = Object.entries(snapshot.val()).reduce((acc, val) => {
-        const rates = Object.values(val[1]);
-        const sum = rates.reduce((toSum, newRate) => toSum + newRate.rate, 0);
+    const result = (await getRecipeRatings()).data
 
-        acc[val[0]] = sum / rates.length;
-        return acc;
-      }, {});
+    console.log(result)
 
-      const ratedLen = Object.keys(recipesRates).length;
-      const average = Object.values(recipesRates).reduce((sum, val) => sum + val, 0) / ratedLen;
+    /**
+     * @name recipesRates
+     * @type {{ recipeID_1: number, recipeID_2: number, recipeID_n: number }}
+     *
+     * is an object with all recipes rate, order by recipes key
+     *
+     * {
+     *     recipe_1: 3,
+     *     recipe_2: 4
+     * }
+     */
+    const recipesRates = Object.entries(result).reduce((acc, val) => {
+      const rates = Object.values(val[1]);
+      const sum = rates.reduce((toSum, newRate) => toSum + newRate.rate, 0);
 
-      return { average, recipesRates, ratedLen };
-    }
+      acc[val[0]] = sum / rates.length;
+      return acc;
+    }, {});
+
+    const ratedLen = Object.keys(recipesRates).length;
+    const average = Object.values(recipesRates).reduce((sum, val) => sum + val, 0) / ratedLen;
+
+    return { average, recipesRates, ratedLen };
+
   } catch (e) {
     console.error(e)
   }
@@ -90,6 +104,9 @@ const dataURLtoFile = (dataurl, filename) => {
 
 
 const addImage = async (name, imageURL, videoURL) => {
+
+
+
   const uploadVideoPromise = new Promise((resolve, reject) => {
     if (videoURL) {
       const videoRef = ref(storage, `recettes/${videoURL.name}`);
@@ -108,10 +125,6 @@ const addImage = async (name, imageURL, videoURL) => {
       resolve();
     }
   });
-
-
-  // Find all the prefixes and items.
-
 
   const uploadImgPromise = new Promise(async (resolve, reject) => {
     if (imageURL) {
@@ -200,7 +213,7 @@ const createThumbnail = async (imageURL, name, item) => {
 
 //       var i = 0
 //       res.items.forEach(async (itemRef) => {
-       
+
 //         if (
 //           !itemRef.name.includes("thumb") &&
 //           !itemRef.name.includes("png")
@@ -263,4 +276,4 @@ const createThumbnail = async (imageURL, name, item) => {
 //     });
 // }
 
-export { addImage, createThumbnail, getRecipeRating, getAllRecipes };
+export { addImage, createThumbnail, getRecipeRating, getAuthToken };

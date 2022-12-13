@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Loader from "react-loader-spinner";
+import {signOut} from "firebase/auth"
+import { auth } from "../firebase"
 
 export default function RightComponent({
   form,
@@ -103,84 +105,113 @@ export default function RightComponent({
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        height: "100%",
-      }}
-    >
-      <div ref={ref} style={{ flex: 1, overflowY: "scroll" }}>
-        {form.ingredients.map((item, index) => {
-          return (
-            <InputComponent
-              item={item}
-              key={index}
-              index={index}
-              setIngredients={setIngredients}
-              ingredients={ingredients}
-            />
-          );
-        })}
-
-        <button
-          style={{
-            backgroundColor: "black",
-            color: "white",
-            height: "50px",
-            width: "50px",
-            marginLeft: 20,
-          }}
-          onClick={() => {
-            handleClick();
-          }}
-        >
-          ADD
-        </button>
-      </div>
-      <label style={{ alignSelf: "center", display: "flex" }}>{msg}</label>
+    <>
       <div
         style={{
-          height: "10%",
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
+        <div ref={ref} style={{ flex: 1, overflowY: "scroll" }}>
+          {form.ingredients.map((item, index) => {
+            return (
+              <InputComponent
+                item={item}
+                key={index}
+                index={index}
+                setIngredients={setIngredients}
+                ingredients={ingredients}
+              />
+            );
+          })}
+
+          <button
+            style={{
+              backgroundColor: "black",
+              color: "white",
+              height: "50px",
+              width: "50px",
+              marginLeft: 20,
+            }}
+            onClick={() => {
+              handleClick();
+            }}
+          >
+            ADD
+          </button>
+        </div>
+        <label style={{ alignSelf: "center", display: "flex" }}>{msg}</label>
+        <div
+          style={{
+            height: "10%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <button
+            disabled={disabled}
+            onClick={() => {
+              setMsg("");
+              setLoading(true);
+              setDisabled(true);
+              onClick(setLoading, setMsg, setDisabled);
+              console.log("HOOHOO", form);
+            }}
+            style={{
+              backgroundColor: disabled ? "gray" : "orange",
+              width: "90%",
+              height: "90%",
+              fontSize: 20,
+              flexDirection: "row",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {loading && (
+              <Loader
+                type="Puff"
+                color="white"
+                height={30}
+                width={30}
+              //3 secs
+              />
+            )}
+            {!!modifying ? "Modifier Recette " : " Ajouter La recette"}
+          </button>
+
+        </div>
+
+
+
+      </div>
+
+      <button
+
+        onClick={() => {
+          signOut(auth)
+        }}
+        style={{
+          marginTop:30,
+          backgroundColor: "red",
+          width: "100%",
+          height: 70,
+          fontSize: 20,
+          flexDirection: "row",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <button
-          disabled={disabled}
-          onClick={() => {
-            setMsg("");
-            setLoading(true);
-            setDisabled(true);
-            onClick(setLoading, setMsg, setDisabled);
-            console.log("HOOHOO", form);
-          }}
-          style={{
-            backgroundColor: disabled ? "gray" : "orange",
-            width: "90%",
-            height: "90%",
-            fontSize: 20,
-            flexDirection: "row",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {loading && (
-            <Loader
-              type="Puff"
-              color="white"
-              height={30}
-              width={30}
-              //3 secs
-            />
-          )}
-          {!!modifying ? "Modifier Recette " : " Ajouter La recette"}
-        </button>
-      </div>
-    </div>
+
+        Se déconnecter
+      </button>
+
+    </>
   );
 }
 

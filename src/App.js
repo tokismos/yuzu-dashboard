@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import "./App.css";
 
 import Login from "./screen/Login/Login";
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import useToken from './hooks/useToken';
-import { db } from "./axios";
-import { addImage, getRecipeRating, } from "./firebase";
+import { db, uploadStorage, getAllRecipes } from "./axios";
+import { addImage, getRecipeRating, getAuthToken, auth } from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
 
+
+
 function App() {
-  const { token, isValidToken, setToken } = useToken();
+
+
 
   const [averageRating, setAverageRating] = useState(0);
   const [ratedLen, setRatedLen] = useState(0);
@@ -29,19 +32,12 @@ function App() {
   const [recipes, setRecipes] = useState([]);
   const [modifying, setModifying] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const auth = getAuth();
-  const user = auth.currentUser;
-
-  const getAllRecipes = async () => {
-    const result = await db.get("/all");
-    setRecipes(result.data);
-  };
+  const [hasPermission, setHasPermission] = useState(false);
 
 
   useEffect(() => {
     (async () => {
-      await getAllRecipes();
+      setRecipes((await getAllRecipes()).data);
       const { average, recipesRates, ratedLen: len } = await getRecipeRating() || {};
 
       if (!average || !recipesRates || !len) return;
@@ -51,6 +47,27 @@ function App() {
       setRated(recipesRates);
 
     })();
+  }, []);
+
+  useEffect(() => {
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+
+
+      if (currentUser)
+        currentUser.getIdTokenResult().then((idTokenResult) => {
+          if (!!idTokenResult.claims.admin) setHasPermission(true)
+          else setHasPermission(false)
+
+        })
+      else setHasPermission(false)
+
+    })
+
+    return () => {
+      unsubscribeAuth();
+    }
+
   }, []);
 
   //Modifier la recette
@@ -73,11 +90,13 @@ function App() {
 
     //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
     if (typeof form.imgURL === "object") {
+
+
       await addImage(form.name, tmp.imgURL, tmp.videoURL)
         .then(async (url) => {
-          console.log("ARoy", JSON.stringify(url));
-          tmp.imgURL = url[0]?.downloadURL;
-          tmp.thumbURL = url[0]?.thumbDownloadURL;
+          console.log("ARoy", url);
+          tmp.imgURL = url;
+          tmp.thumbURL = url;
           // tmp.videoURL = url[1];
         })
         .catch((e) => {
@@ -96,11 +115,12 @@ function App() {
     //2 means we are modifying the scrapped db
 
 
+
     if (modifying == 2) {
       try {
-
-        await db.post(`/add`, { ...tmp, authId: user.uid });
-        await db.delete(`/${form._id}`, { authId: user.uid });
+        const idToken = await getAuthToken()
+        await db.post(`/add/${idToken}`, tmp);
+        await db.delete(`/${form._id}/${idToken}`);
         setLoading(false);
         setMsg("Modified successfuly");
       } catch (e) {
@@ -111,19 +131,19 @@ function App() {
       }
     } else {
       try {
-        console.log(user.uid)
-        const result = await db.patch(`/modify/`, { ...tmp, authId: user.uid});
+        const idToken = await getAuthToken()
+        const result = await db.patch(`/modify/${idToken}`, { ...tmp });
         console.log(result)
         setMsg("UPLOAD SUCCESSFUL");
       } catch (e) {
-        console.log(user.uid)
+
         console.log(e)
         alert("Erreur");
       }
       setLoading(false);
       setDisabled(false);
     }
-    getAllRecipes();
+    setRecipes((await getAllRecipes()).data);
   };
   const resetAll = () => {
     setForm({
@@ -148,6 +168,8 @@ function App() {
 
   //ADD THE RECIPE
   const handleSubmit = () => {
+
+
     const stepsToArray = form?.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
       //detect the white spaces in a line
@@ -172,13 +194,14 @@ function App() {
           +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;
 
 
-        console.log(user.uid)
+
         try {
-          const result = await db.post(`/add`, { ...tmp, authId: user.uid });
+          const idToken = await getAuthToken()
+          const result = await db.post(`/add/${idToken}`, tmp);
           console.log(result)
           setLoading(false);
           setMsg("UPLOAD SUCCESSFUL,WAIT 5s !!!!");
-          getAllRecipes();
+          setRecipes((await getAllRecipes()).data);
           setTimeout(() => resetAll(), 5000);
         } catch (e) {
           setLoading(false);
@@ -195,9 +218,9 @@ function App() {
       });
   };
 
-  useEffect(() => { console.log('salut') }, [token])
 
-  if (!isValidToken()) return <Login setToken={setToken} />
+
+  if (!hasPermission) return <Login />
   return (
     <div
       style={{
@@ -257,6 +280,7 @@ function App() {
                   setModifying={setModifying}
                   setDisabled={setDisabled}
                   setMsg={setMsg}
+
                 />
               );
             })}

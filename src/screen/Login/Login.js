@@ -11,21 +11,8 @@ const Login = ({ setToken }) => {
 
     const handleGoogleSubmit = async () => {
         try {
-            const result = await signInWithPopup(auth, provider);
-
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            const user = result.user;
-
-            console.log(user.uid)
-
-            const authorizedUser = process.env.REACT_APP_AUTHORIZED_USER;
-            const authorizedUser2 = process.env.REACT_APP_AUTHORIZED_USER2;
-
-            if (user.uid === authorizedUser || user.uid === authorizedUser2) {
-                setToken(user.uid);
-                window.location.reload();
-            }
+             await signInWithPopup(auth, provider); 
+           
         } catch (error) {
             const errorCode = error.code;
             const errorMessage = error.message;
@@ -34,7 +21,7 @@ const Login = ({ setToken }) => {
             const credential = GoogleAuthProvider.credentialFromError(error)
 
             console.error({ errorCode, errorMessage, email, credential });
-            alert("ok")
+          
         }
     }
 
