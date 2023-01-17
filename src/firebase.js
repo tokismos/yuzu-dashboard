@@ -25,7 +25,7 @@ let downloadUrlVideo;
 const THUMB_MAX = 216;
 const ORIG_MAX = 1000;
 
-const resizeImage = (img, max) => new Promise(resolve => {
+const resizeImageWithCompression = (img, max) => new Promise(resolve => {
   Resizer.imageFileResizer(
     img,
     max,
@@ -36,6 +36,21 @@ const resizeImage = (img, max) => new Promise(resolve => {
     (uri) => resolve(uri),
     "base64"
   )
+  
+});
+
+const resizeImage = (img, max) => new Promise(resolve => {
+  Resizer.imageFileResizer(
+    img,
+    max,
+    max,
+    "jpeg",
+    100,
+    0,
+    (uri) => resolve(uri),
+    "base64"
+  )
+  
 });
 
 const getAuthToken = () => getIdToken(auth.currentUser, true)
@@ -103,9 +118,7 @@ const dataURLtoFile = (dataurl, filename) => {
 
 
 
-const addImage = async (name, imageURL, videoURL) => {
-
-
+const addImage = async (name, imageURL, videoURL, compressImage) => {
 
   const uploadVideoPromise = new Promise((resolve, reject) => {
     if (videoURL) {
@@ -128,11 +141,13 @@ const addImage = async (name, imageURL, videoURL) => {
 
   const uploadImgPromise = new Promise(async (resolve, reject) => {
     if (imageURL) {
-      const imageData = await resizeImage(imageURL, ORIG_MAX);
+      if(compressImage) var imageData = await resizeImageWithCompression(imageURL, ORIG_MAX);
+     else var imageData = await resizeImage(imageURL, ORIG_MAX);  
       const image = dataURLtoFile(imageData, name);
       const imagesRef = ref(storage, `recettes/${name}`);
 
-      const thumbData = await resizeImage(imageURL, THUMB_MAX);
+      if(compressImage)  var thumbData = await resizeImageWithCompression(imageURL, THUMB_MAX);
+      else var thumbData = await resizeImage(imageURL, THUMB_MAX);
       const thumb = dataURLtoFile(thumbData, `${name}_thumb`);
       const thumbRef = ref(storage, `recettes/${name}_thumb`);
 
@@ -148,7 +163,7 @@ const addImage = async (name, imageURL, videoURL) => {
                 getDownloadURL(thumbRef)
                   .then(async (thumbDownloadURL) => {
                     resolve({ downloadURL, thumbDownloadURL });
-
+               
                   })
               })
           })
@@ -156,6 +171,7 @@ const addImage = async (name, imageURL, videoURL) => {
       });
     } else {
       resolve();
+  
     }
   });
 
@@ -173,8 +189,8 @@ const createThumbnail = async (imageURL, name, item) => {
     const response = await fetch(imageURL).then(r => r.blob()).catch(console.error)
 
     const file = new File([response], `myImage-${new Date()}.png`, { type: "image/png" })
-    const thumbData = await resizeImage(file, THUMB_MAX)
-    const origData = await resizeImage(file, ORIG_MAX)
+    const thumbData = await resizeImageWithCompression(file, THUMB_MAX,)
+    const origData = await resizeImageWithCompression(file, ORIG_MAX)
 
     if (!thumbData || !origData) {
       return

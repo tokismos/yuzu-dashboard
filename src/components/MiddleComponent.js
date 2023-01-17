@@ -62,6 +62,27 @@ export default function MiddleComponent({ form, setForm }) {
         </label>
       </div>
       <div
+          style={{
+            width: "100%",
+            marginTop: "20px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ display: "flex" }} 
+        
+          >
+            <label style={{ marginRight: 20 }}>Compresser les images</label>
+            <input type="checkbox" checked={form?.compressImage}
+              onClick={()=> {
+                const tmp = { ...form };
+                tmp.compressImage = !tmp.compressImage;
+                setForm(tmp);
+              }}
+            />
+          </div>
+          </div>
+      <div
         style={{
           display: "flex",
           flexDirection: "column",
@@ -71,6 +92,7 @@ export default function MiddleComponent({ form, setForm }) {
         }}
       >
         <div style={{ display: "flex", width: "100%" }}>
+          
           <input
             style={{
               width: "90%",

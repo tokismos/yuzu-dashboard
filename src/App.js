@@ -23,6 +23,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [form, setForm] = useState({
+    compressImage: true,
     difficulty: "facile",
     category: [],
     regime: [],
@@ -92,7 +93,7 @@ function App() {
     if (typeof form.imgURL === "object") {
 
 
-      await addImage(form.name, tmp.imgURL, tmp.videoURL)
+      await addImage(form.name, tmp.imgURL, tmp.videoURL, tmp.compressImage)
         .then(async (url) => {
           console.log("ARoy", url);
           tmp.imgURL = url;
@@ -104,7 +105,7 @@ function App() {
         });
     }
     if (typeof form.videoURL === "object") {
-      await addImage(form.name, false, tmp.videoURL)
+      await addImage(form.name, false, tmp.videoURL, tmp.compressImage)
         .then(async (url) => {
           tmp.videoURL = url[1];
         })
@@ -147,6 +148,7 @@ function App() {
   };
   const resetAll = () => {
     setForm({
+      compressImage: form.compressImage,
       steps: [],
       name: "",
       chefName: "",
@@ -178,7 +180,7 @@ function App() {
     const tmp = { ...form };
     //we wait add image to storage to get url then call the post api to add to mongoDB
     console.log("ORF", tmp);
-    addImage(form.name, tmp.imgURL, tmp.videoURL)
+    addImage(form.name, tmp.imgURL, tmp.videoURL, tmp.compressImage)
       .then(async (url) => {
         console.log("ohio", url);
         tmp.imgURL = url[0]?.downloadURL;

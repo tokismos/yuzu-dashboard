@@ -26,7 +26,7 @@ export default function LeftComponent({
     (async () => {
       try {
         if (recipe?.imgURL && !recipe?.thumbURL) {
-          await createThumbnail(recipe?.imgURL, recipe?.name, recipe)
+          await createThumbnail(recipe?.imgURL, recipe?.name, recipe, true)
         } else { }
       } catch (e) {
         console.error(e)
