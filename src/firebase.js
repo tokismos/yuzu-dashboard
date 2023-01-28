@@ -67,9 +67,14 @@ const getRecipeRating = async () => {
 
   try {
 
-    const result = (await getRecipeRatings()).data
+    var result = (await getRecipeRatings()).data
 
-    console.log(result)
+    result.forEach(element => {
+      delete element.userId
+      delete element.createdAt
+    });
+
+
 
     /**
      * @name recipesRates
@@ -83,8 +88,10 @@ const getRecipeRating = async () => {
      * }
      */
     const recipesRates = Object.entries(result).reduce((acc, val) => {
+      
       const rates = Object.values(val[1]);
-      const sum = rates.reduce((toSum, newRate) => toSum + newRate.rate, 0);
+     
+      const sum = rates.reduce((toSum, newRate) => toSum + newRate, 0);
 
       acc[val[0]] = sum / rates.length;
       return acc;
@@ -92,6 +99,8 @@ const getRecipeRating = async () => {
 
     const ratedLen = Object.keys(recipesRates).length;
     const average = Object.values(recipesRates).reduce((sum, val) => sum + val, 0) / ratedLen;
+
+    console.log({ average, recipesRates, ratedLen }, 'das')
 
     return { average, recipesRates, ratedLen };
 

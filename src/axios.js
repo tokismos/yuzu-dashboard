@@ -9,7 +9,7 @@ import {storage, getAuthToken} from "./firebase"
 require('dotenv').config();
 
 const db = axios.create({
-  baseURL: `${process.env.REACT_APP_API_URL}/recipes`,
+  baseURL: `http://localhost:3000/recipesfs`,
  
 });
 

@@ -119,6 +119,7 @@ export default function LeftComponent({
 
   const toggleVisible = async (id, value) => {
     try {
+      console.log(id)
       const idToken = await getAuthToken()
       await db.patch(`/toggleVisible/${id}/${value}/${idToken}`);
     } catch (e) {

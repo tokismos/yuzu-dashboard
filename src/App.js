@@ -14,8 +14,6 @@ import RightComponent from "./components/RightComponent";
 
 function App() {
 
-
-
   const [averageRating, setAverageRating] = useState(0);
   const [ratedLen, setRatedLen] = useState(0);
   const [rated, setRated] = useState({});
@@ -222,7 +220,7 @@ function App() {
 
 
 
-  if (!hasPermission) return <Login />
+  // if (!hasPermission) return <Login />
   return (
     <div
       style={{
@@ -272,6 +270,7 @@ function App() {
             .reverse()
             .map((item) => {
               const recipeRate = rated[item._id];
+              if(item._id == "6384f00fc6fc99a0125234d0") console.log(item, 'item')
               return (
                 <LeftComponent
                   key={item.name}
