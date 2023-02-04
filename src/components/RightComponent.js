@@ -192,8 +192,9 @@ export default function RightComponent({
 
       <button
 
-        onClick={() => {
-          signOut(auth)
+        onClick={async () => {
+          await signOut(auth)
+   
         }}
         style={{
           marginTop:30,

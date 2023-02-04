@@ -10,12 +10,7 @@ require('dotenv').config();
 
 const db = axios.create({
   baseURL: `http://localhost:3000/recipesfs`,
- 
 });
-
-
-
-
 
 const generateThumbnail = async (imageURL, name) => {
   console.log({imageURL, name})

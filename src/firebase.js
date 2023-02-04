@@ -16,6 +16,8 @@ const firebaseConfig = {
   appId: "1:246034960415:web:c4aa304ce2a2bc379bc52a",
   measurementId: "G-N0G4M012VE",
 };
+
+
 const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app);
 export const auth = getAuth(app)
@@ -123,9 +125,6 @@ const dataURLtoFile = (dataurl, filename) => {
 
   return new File([u8arr], filename, { type: mime });
 }
-
-
-
 
 const addImage = async (name, imageURL, videoURL, compressImage) => {
 

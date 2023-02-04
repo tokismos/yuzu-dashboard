@@ -220,7 +220,7 @@ function App() {
 
 
 
-  // if (!hasPermission) return <Login />
+  if (!hasPermission) return <Login />
   return (
     <div
       style={{
