@@ -9,8 +9,13 @@ import {storage, getAuthToken} from "./firebase"
 require('dotenv').config();
 
 const db = axios.create({
-  baseURL: `http://localhost:3000/recipesfs`,
+  baseURL: `${process.env.REACT_APP_API_URL}/recipesfs`,
+ 
 });
+
+
+
+
 
 const generateThumbnail = async (imageURL, name) => {
   console.log({imageURL, name})
