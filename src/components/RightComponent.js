@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Loader from "react-loader-spinner";
-import {signOut} from "firebase/auth"
-import { auth } from "../firebase"
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 export default function RightComponent({
   form,
@@ -159,7 +159,6 @@ export default function RightComponent({
               setLoading(true);
               setDisabled(true);
               onClick(setLoading, setMsg, setDisabled);
-              console.log("HOOHOO", form);
             }}
             style={{
               backgroundColor: disabled ? "gray" : "orange",
@@ -178,25 +177,20 @@ export default function RightComponent({
                 color="white"
                 height={30}
                 width={30}
-              //3 secs
+                //3 secs
               />
             )}
             {!!modifying ? "Modifier Recette " : " Ajouter La recette"}
           </button>
-
         </div>
-
-
-
       </div>
 
       <button
-
         onClick={() => {
-          signOut(auth)
+          signOut(auth);
         }}
         style={{
-          marginTop:30,
+          marginTop: 30,
           backgroundColor: "red",
           width: "100%",
           height: 70,
@@ -207,10 +201,8 @@ export default function RightComponent({
           alignItems: "center",
         }}
       >
-
         Se déconnecter
       </button>
-
     </>
   );
 }

@@ -1,21 +1,15 @@
 import { useState, useEffect, useContext } from "react";
 import "./App.css";
 
-import Login from "./screen/Login/Login";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import useToken from './hooks/useToken';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import useToken from "./hooks/useToken";
 import { db, uploadStorage, getAllRecipes } from "./axios";
 import { addImage, getRecipeRating, getAuthToken, auth } from "./firebase";
 import LeftComponent from "./components/LeftComponent";
 import MiddleComponent from "./components/MiddleComponent";
 import RightComponent from "./components/RightComponent";
 
-
-
 function App() {
-
-
-
   const [averageRating, setAverageRating] = useState(0);
   const [ratedLen, setRatedLen] = useState(0);
   const [rated, setRated] = useState({});
@@ -23,51 +17,49 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [form, setForm] = useState({
-    difficulty: "facile",
-    category: [],
+    difficulty: "Facile",
+    // category: [],
     regime: [],
+    typesPlat: [],
     material: [],
     ingredients: [{ name: "", quantity: "", unite: "g" }],
+    saison: "January",
   });
   const [recipes, setRecipes] = useState([]);
   const [modifying, setModifying] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [hasPermission, setHasPermission] = useState(false);
 
-
   useEffect(() => {
     (async () => {
       setRecipes((await getAllRecipes()).data);
-      const { average, recipesRates, ratedLen: len } = await getRecipeRating() || {};
+      const {
+        average,
+        recipesRates,
+        ratedLen: len,
+      } = (await getRecipeRating()) || {};
 
       if (!average || !recipesRates || !len) return;
 
       setRatedLen(len);
       setAverageRating(average);
       setRated(recipesRates);
-
     })();
   }, []);
 
   useEffect(() => {
-
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-
-
       if (currentUser)
         currentUser.getIdTokenResult().then((idTokenResult) => {
-          if (!!idTokenResult.claims.admin) setHasPermission(true)
-          else setHasPermission(false)
-
-        })
-      else setHasPermission(false)
-
-    })
+          if (!!idTokenResult.claims.admin) setHasPermission(true);
+          else setHasPermission(false);
+        });
+      else setHasPermission(false);
+    });
 
     return () => {
       unsubscribeAuth();
-    }
-
+    };
   }, []);
 
   //Modifier la recette
@@ -75,11 +67,14 @@ function App() {
     //Transform the value of steps to an array
 
     const tmp = { ...form };
-    tmp.category = form?.category?.map((item) => item.label) ?? [];
+
+    // tmp.category = form?.category?.map((item) => item.label) ?? [];
     tmp.regime = form?.regime?.map((item) => item.label) ?? [];
     tmp.material = form?.material?.map((item) => item.label) ?? [];
     tmp.tempsTotal =
       +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;
+
+    tmp.typesPlat = form.typesPlat.map((item) => item.value) ?? [];
 
     const stepsToArray = form.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
@@ -90,11 +85,8 @@ function App() {
 
     //Detect if we drop a picture the form.imgURL will be an object of a file,We change the image if it exists
     if (typeof form.imgURL === "object") {
-
-
       await addImage(form.name, tmp.imgURL, tmp.videoURL)
         .then(async (url) => {
-          console.log("ARoy", url);
           tmp.imgURL = url;
           tmp.thumbURL = url;
           // tmp.videoURL = url[1];
@@ -114,13 +106,11 @@ function App() {
     }
     //2 means we are modifying the scrapped db
 
-
-
     if (modifying == 2) {
       try {
-        const idToken = await getAuthToken()
-        await db.post(`/add/${idToken}`, tmp);
-        await db.delete(`/${form._id}/${idToken}`);
+        // const idToken = await getAuthToken();
+        await db.post(`/add`, tmp);
+        await db.delete(`/${form._id}`);
         setLoading(false);
         setMsg("Modified successfuly");
       } catch (e) {
@@ -131,13 +121,11 @@ function App() {
       }
     } else {
       try {
-        const idToken = await getAuthToken()
-        const result = await db.patch(`/modify/${idToken}`, { ...tmp });
-        console.log(result)
+        const result = await db.patch(`/modify`, { ...tmp });
+        console.log(result);
         setMsg("UPLOAD SUCCESSFUL");
       } catch (e) {
-
-        console.log(e)
+        console.log(e);
         alert("Erreur");
       }
       setLoading(false);
@@ -156,10 +144,12 @@ function App() {
       tempsCuisson: "",
       imgURL: "",
       difficulty: "Facile",
-      category: [],
+      saison: "Janvier",
+      // category: [],
       regime: [],
       material: [],
       ingredients: [{ name: "", quantity: "", unite: "g" }],
+      typesPlat: [],
     });
     setMsg("");
     setLoading(false);
@@ -168,8 +158,6 @@ function App() {
 
   //ADD THE RECIPE
   const handleSubmit = () => {
-
-
     const stepsToArray = form?.steps?.split(/\r?\n/);
     const stepsWithoutSpace = stepsToArray?.filter(
       //detect the white spaces in a line
@@ -177,28 +165,25 @@ function App() {
     );
     const tmp = { ...form };
     //we wait add image to storage to get url then call the post api to add to mongoDB
-    console.log("ORF", tmp);
     addImage(form.name, tmp.imgURL, tmp.videoURL)
       .then(async (url) => {
-        console.log("ohio", url);
         tmp.imgURL = url[0]?.downloadURL;
         tmp.thumbURL = url[0]?.thumbDownloadURL;
         if (url[1]) {
           tmp.videoURL = url[1];
         }
         tmp.steps = stepsWithoutSpace;
-        tmp.category = form.category.map((item) => item.label);
+        // tmp.category = form.typesPlat.map((item) => item.label);
         tmp.regime = form.regime.map((item) => item.label);
         tmp.material = form.material.map((item) => item.label);
         tmp.tempsTotal =
           +form?.tempsAttente + +form?.tempsCuisson + +form?.tempsPreparation;
-
-
-
+        tmp.typesPlat = form.typesPlat.map((item) => item.value);
+        console.log("HAZA DAZ HNA");
         try {
-          const idToken = await getAuthToken()
-          const result = await db.post(`/add/${idToken}`, tmp);
-          console.log(result)
+          // const idToken = await getAuthToken();
+          const result = await db.post(`/add`, tmp);
+          console.log(result);
           setLoading(false);
           setMsg("UPLOAD SUCCESSFUL,WAIT 5s !!!!");
           setRecipes((await getAllRecipes()).data);
@@ -212,15 +197,13 @@ function App() {
       })
       .catch((e) => {
         setMsg("THERE IS AN ERROR", e);
-        console.log(e)
+        console.log(e);
         setLoading(false);
         setDisabled(false);
       });
   };
 
-
-
-  if (!hasPermission) return <Login />
+  // if (!hasPermission) return <Login />
   return (
     <div
       style={{
@@ -253,7 +236,10 @@ function App() {
             margin: 10,
           }}
         />
-        <label>Note moyenne {averageRating} ({ratedLen} / {recipes.length} recettes notées)</label>
+        <label>
+          Note moyenne {averageRating} ({ratedLen} / {recipes.length} recettes
+          notées)
+        </label>
         <div style={{ overflowY: "scroll", width: "100%", padding: 0 }}>
           {recipes
             .filter((item) => {
@@ -280,7 +266,6 @@ function App() {
                   setModifying={setModifying}
                   setDisabled={setDisabled}
                   setMsg={setMsg}
-
                 />
               );
             })}

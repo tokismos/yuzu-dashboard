@@ -1,11 +1,9 @@
-import React, { useEffect, useState , useContext} from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import { db } from "../axios";
 import { createThumbnail } from "../firebase";
 
-import {getAuthToken} from "../firebase"
-
-  
+import { getAuthToken } from "../firebase";
 
 export default function LeftComponent({
   recipe,
@@ -16,35 +14,38 @@ export default function LeftComponent({
   setMsg,
   rate,
   name,
-  
 }) {
-
-
-
-
   useEffect(() => {
     (async () => {
       try {
         if (recipe?.imgURL && !recipe?.thumbURL) {
-          await createThumbnail(recipe?.imgURL, recipe?.name, recipe)
-        } else { }
+          await createThumbnail(recipe?.imgURL, recipe?.name, recipe);
+        } else {
+        }
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
-    })()
-  }, [])
+    })();
+  }, []);
+
   const modify = () => {
     setDisabled(false);
     setModifying(true);
     let arrCategory = [];
     let arrMaterial = [];
+    let arrTypesPlat = [];
+    let arrRegime = [];
     //to show the values in the MultiSelect
-    recipe?.category?.map((item) =>
-      arrCategory.push({ label: item, value: item })
-    );
+    // recipe?.category?.map((item) =>
+    //   arrCategory.push({ label: item, value: item })
+    // );
     recipe?.material?.map((item) =>
       arrMaterial.push({ label: item, value: item })
     );
+    recipe?.typesPlat?.map((item) =>
+      arrTypesPlat.push({ label: item, value: item })
+    );
+    recipe?.regime?.map((item) => arrRegime.push({ label: item, value: item }));
     // ---
 
     let tmp = "";
@@ -56,6 +57,8 @@ export default function LeftComponent({
       ...recipe,
       category: arrCategory,
       material: arrMaterial,
+      typesPlat: arrTypesPlat,
+      regime: arrRegime,
       steps: tmp,
     });
   };
@@ -110,7 +113,7 @@ export default function LeftComponent({
       tempsAttente: tempsAttente ? tempsAttente : 0,
       nbrPersonne: nbrPersonne,
       difficulty: "Facile",
-      category: [],
+      // category: [],
       material: [],
       steps: [],
       ingredients: ingredients,
@@ -119,8 +122,9 @@ export default function LeftComponent({
 
   const toggleVisible = async (id, value) => {
     try {
-      const idToken = await getAuthToken()
-      await db.patch(`/toggleVisible/${id}/${value}/${idToken}`);
+      // const idToken = await getAuthToken();
+      await db.patch(`/toggleVisible/${id}/${value}/`);
+      console.log("daz hna");
     } catch (e) {
       console.log("There is an error.", e);
     }
@@ -182,7 +186,7 @@ export default function LeftComponent({
             Liked by{" "}
             {parseInt(
               (recipe.stats.nbrRight * 100) /
-              (recipe.stats.nbrRight + recipe.stats.nbrLeft)
+                (recipe.stats.nbrRight + recipe.stats.nbrLeft)
             )}
             % {recipe.stats.nbrRight}
           </label>
@@ -206,10 +210,12 @@ export default function LeftComponent({
               window.confirm("Est tu sur de vouloir supprimer cette recette")
             ) {
               // Save it!
-             
-              const idToken = await getAuthToken()
-            const result = await db.delete(`/${recipe._id}/${idToken}`);
-            console.log(result)
+
+              // const idToken = await getAuthToken();
+              console.log("iiiiiiiiiiide", recipe._id);
+              const result = await db.delete(`/${recipe._id}`);
+              console.log("delete");
+              console.log(result);
               setRecipes((p) => p.filter((i) => i._id != recipe._id));
               console.log("deleted");
             } else {
